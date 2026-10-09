@@ -87,6 +87,11 @@ const defaultMauiShopping = [
   "Whalers Village - incl. Louis Vuitton (Täglich 09:00 – 21:00 Uhr)"
 ];
 
+const defaultMauiMisc = [
+  "Road to Hāna (hin & zurück ~115 Mi. / 4,5 Std. Reine Fahrzeit + Stopps -> 1 ganzen Tag einplanen!)",
+  "Hāna Lava Tube (Ka'eleku Caverns - Vulkanhöhle bei Hāna)"
+];
+
 const defaultBigIslandShopping = [
   "KTA Super Stores (Täglich 06:00 – 21:00/22:00 Uhr)",
   "Safeway - Kona/Hilo (24 Std. geöffnet)",
@@ -162,15 +167,17 @@ export default function App() {
 
     // Maui defaults
     if (!parsed["Maui"]) {
-      parsed["Maui"] = { food: [], shopping: defaultMauiShopping, misc: [] };
+      parsed["Maui"] = { food: [], shopping: defaultMauiShopping, misc: defaultMauiMisc };
     } else {
       parsed["Maui"].shopping = defaultMauiShopping;
+      parsed["Maui"].misc = defaultMauiMisc;
     }
 
     if (!parsed["Maui (Kahului)"]) {
-      parsed["Maui (Kahului)"] = { food: [], shopping: defaultMauiShopping, misc: [] };
+      parsed["Maui (Kahului)"] = { food: [], shopping: defaultMauiShopping, misc: defaultMauiMisc };
     } else {
       parsed["Maui (Kahului)"].shopping = defaultMauiShopping;
+      parsed["Maui (Kahului)"].misc = defaultMauiMisc;
     }
 
     // Big Island defaults
