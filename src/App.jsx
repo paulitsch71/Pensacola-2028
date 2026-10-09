@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, MapPin, Plane, Utensils, ShoppingBag, 
-  FileText, Plus, Trash2, ChevronDown, ChevronUp 
+  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark
 } from 'lucide-react';
 
 const initialItinerary = [
@@ -33,10 +33,17 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('plan');
   const [selectedRegion, setSelectedRegion] = useState('Alle');
   const [expandedDay, setExpandedDay] = useState(null);
+  const [isRegionNotesExpanded, setIsRegionNotesExpanded] = useState(true);
 
-  // LocalStorage state for notes
+  // LocalStorage state for daily notes
   const [reminders, setReminders] = useState(() => {
     const saved = localStorage.getItem('usa2027_reminders');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // LocalStorage state for destination/region notes
+  const [regionReminders, setRegionReminders] = useState(() => {
+    const saved = localStorage.getItem('usa2027_region_reminders');
     return saved ? JSON.parse(saved) : {};
   });
 
@@ -45,6 +52,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('usa2027_reminders', JSON.stringify(reminders));
   }, [reminders]);
+
+  useEffect(() => {
+    localStorage.setItem('usa2027_region_reminders', JSON.stringify(regionReminders));
+  }, [regionReminders]);
 
   const regions = ['Alle', ...new Set(initialItinerary.map(item => item.region))];
 
@@ -56,6 +67,7 @@ export default function App() {
     setExpandedDay(expandedDay === id ? null : id);
   };
 
+  // Daily Notes Handlers
   const handleAddNote = (dayId, category) => {
     const text = inputState[`${dayId}-${category}`];
     if (!text || !text.trim()) return;
@@ -89,6 +101,43 @@ export default function App() {
     });
   };
 
+  // Region/Destination Notes Handlers
+  const handleAddRegionNote = (regionName, category) => {
+    const text = inputState[`reg-${regionName}-${category}`];
+    if (!text || !text.trim()) return;
+
+    setRegionReminders(prev => {
+      const regNotes = prev[regionName] || { food: [], shopping: [], misc: [] };
+      return {
+        ...prev,
+        [regionName]: {
+          ...regNotes,
+          [category]: [...(regNotes[category] || []), text.trim()]
+        }
+      };
+    });
+
+    setInputState(prev => ({ ...prev, [`reg-${regionName}-${category}`]: '' }));
+  };
+
+  const handleDeleteRegionNote = (regionName, category, index) => {
+    setRegionReminders(prev => {
+      const regNotes = prev[regionName];
+      if (!regNotes) return prev;
+      const updatedCat = regNotes[category].filter((_, i) => i !== index);
+      return {
+        ...prev,
+        [regionName]: {
+          ...regNotes,
+          [category]: updatedCat
+        }
+      };
+    });
+  };
+
+  const currentRegionNotes = regionReminders[selectedRegion] || { food: [], shopping: [], misc: [] };
+  const totalRegionNotes = (currentRegionNotes.food?.length || 0) + (currentRegionNotes.shopping?.length || 0) + (currentRegionNotes.misc?.length || 0);
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-8 font-sans">
       <header className="max-w-4xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-lg">
@@ -116,6 +165,7 @@ export default function App() {
 
       {activeTab === 'plan' && (
         <main className="max-w-4xl mx-auto space-y-4">
+          {/* Region Selector */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider mr-1">Region:</span>
             {regions.map(r => (
@@ -129,6 +179,108 @@ export default function App() {
             ))}
           </div>
 
+          {/* Overall Destination / Region Notes Card */}
+          <div className="bg-indigo-950/40 rounded-xl border border-indigo-500/30 shadow-md overflow-hidden">
+            <button 
+              onClick={() => setIsRegionNotesExpanded(!isRegionNotesExpanded)}
+              className="w-full p-4 flex items-center justify-between text-left bg-indigo-900/30 hover:bg-indigo-900/50 transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <Bookmark className="w-5 h-5 text-indigo-400" />
+                <div>
+                  <h3 className="font-bold text-indigo-200 text-sm">
+                    Allgemeine Notizen & Tipps für: <span className="text-amber-300 underline underline-offset-4 decoration-amber-400/50">{selectedRegion}</span>
+                  </h3>
+                  <p className="text-xs text-indigo-300/70">Insel- & ortsübergreifende Vorschläge ({totalRegionNotes} Notizen)</p>
+                </div>
+              </div>
+              {isRegionNotesExpanded ? <ChevronUp className="w-5 h-5 text-indigo-300" /> : <ChevronDown className="w-5 h-5 text-indigo-300" />}
+            </button>
+
+            {isRegionNotesExpanded && (
+              <div className="p-4 bg-slate-900/90 border-t border-indigo-500/20 space-y-4">
+                {/* Food Category */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                    <Utensils className="w-3.5 h-3.5" /> Essensvorschläge & Restaurants für {selectedRegion}
+                  </div>
+                  <ul className="space-y-1">
+                    {currentRegionNotes.food?.map((note, i) => (
+                      <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
+                        <span>{note}</span>
+                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'food', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder={`Allgemeiner Lokaltipp für ${selectedRegion}...`}
+                      className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 text-slate-200"
+                      value={inputState[`reg-${selectedRegion}-food`] || ''}
+                      onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-food`]: e.target.value })}
+                      onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'food')}
+                    />
+                    <button onClick={() => handleAddRegionNote(selectedRegion, 'food')} className="bg-emerald-600 hover:bg-emerald-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                  </div>
+                </div>
+
+                {/* Shopping Category */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-pink-400">
+                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Malls auf {selectedRegion}
+                  </div>
+                  <ul className="space-y-1">
+                    {currentRegionNotes.shopping?.map((note, i) => (
+                      <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
+                        <span>{note}</span>
+                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'shopping', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder={`Shopping-Tipp für ${selectedRegion}...`}
+                      className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 text-slate-200"
+                      value={inputState[`reg-${selectedRegion}-shopping`] || ''}
+                      onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-shopping`]: e.target.value })}
+                      onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'shopping')}
+                    />
+                    <button onClick={() => handleAddRegionNote(selectedRegion, 'shopping')} className="bg-pink-600 hover:bg-pink-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                  </div>
+                </div>
+
+                {/* Misc Category */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
+                    <FileText className="w-3.5 h-3.5" /> Sonstiges & Highlights für {selectedRegion}
+                  </div>
+                  <ul className="space-y-1">
+                    {currentRegionNotes.misc?.map((note, i) => (
+                      <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
+                        <span>{note}</span>
+                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'misc', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder={`Allgemeines Highlight/Reminder für ${selectedRegion}...`}
+                      className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 text-slate-200"
+                      value={inputState[`reg-${selectedRegion}-misc`] || ''}
+                      onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-misc`]: e.target.value })}
+                      onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'misc')}
+                    />
+                    <button onClick={() => handleAddRegionNote(selectedRegion, 'misc')} className="bg-sky-600 hover:bg-sky-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Daily Itinerary Cards */}
           <div className="space-y-4">
             {filteredItinerary.map((item) => {
               const dayNotes = reminders[item.id] || { food: [], shopping: [], misc: [] };
@@ -165,7 +317,7 @@ export default function App() {
                       className="w-full flex items-center justify-between text-xs font-medium text-slate-400 hover:text-slate-200 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80 transition-all"
                     >
                       <span className="flex items-center gap-2">
-                        <span>Reminder & Ideen {totalNotes > 0 && `(${totalNotes})`}</span>
+                        <span>Tages-Reminder & Ideen {totalNotes > 0 && `(${totalNotes})`}</span>
                       </span>
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -173,10 +325,10 @@ export default function App() {
 
                   {isExpanded && (
                     <div className="bg-slate-900/90 p-4 border-t border-slate-700/60 space-y-4">
-                      {/* Essen Category */}
+                      {/* Daily Essen Category */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
-                          <Utensils className="w-3.5 h-3.5" /> Essensvorschläge & Gastro
+                          <Utensils className="w-3.5 h-3.5" /> Essensvorschläge für {item.date}
                         </div>
                         <ul className="space-y-1">
                           {dayNotes.food?.map((note, i) => (
@@ -199,10 +351,10 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Shopping Category */}
+                      {/* Daily Shopping Category */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-xs font-bold text-pink-400">
-                          <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Outlets
+                          <ShoppingBag className="w-3.5 h-3.5" /> Shopping für {item.date}
                         </div>
                         <ul className="space-y-1">
                           {dayNotes.shopping?.map((note, i) => (
@@ -225,10 +377,10 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Sonstiges Category */}
+                      {/* Daily Misc Category */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
-                          <FileText className="w-3.5 h-3.5" /> Sonstiges & Reminder
+                          <FileText className="w-3.5 h-3.5" /> Sonstiges für {item.date}
                         </div>
                         <ul className="space-y-1">
                           {dayNotes.misc?.map((note, i) => (
