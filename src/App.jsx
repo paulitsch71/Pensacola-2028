@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, MapPin, Plane, Utensils, ShoppingBag, 
-  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree
+  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree, CloudSun
 } from 'lucide-react';
 
 const initialItinerary = [
@@ -26,8 +26,25 @@ const initialItinerary = [
   { id: 19, date: "Mo, 31.05.2027", region: "Los Angeles", isHawaii: false, morning: "Freizeit in Los Angeles", evening: "Letzter Abend der Reise" },
   { id: 20, date: "Di, 01.06.2027", region: "Los Angeles", isHawaii: false, morning: "Freizeit & Entspannung in Los Angeles", evening: "Abend in LA" },
   { id: 21, date: "Mi, 02.06.2027", region: "Los Angeles", isHawaii: false, morning: "Vorbereitung auf die Heimreise", evening: "Koffer packen & Ausklang" },
-  { id: 22, date: "Do, 03.06.2027", region: "Frankfurt (Ankunft)", isFlight: true, isHawaii: false, morning: "Flug AS 1403: LAX 13:29 Uhr ✈️ 14:55 Uhr SFO", evening: "Flug DE 2097: SFO 16:40 Uhr ✈️ 12:45 Uhr (+1 Tag) FRA Frankfurt" }
+  { id: 22, date: "Do, 03.06.2027", region: "Flug", isFlight: true, isHawaii: false, morning: "Flug AS 1403: LAX 13:29 Uhr ✈️ 14:55 Uhr SFO", evening: "Flug DE 2097: SFO 16:40 Uhr ✈️ Richtung Frankfurt" },
+  { id: 23, date: "Fr, 04.06.2027", region: "Frankfurt (Ankunft)", isFlight: true, isHawaii: false, morning: "Ankunft am Flughafen Frankfurt (FRA) um 12:45 Uhr", evening: "Heimreise & Urlaubsabschluss" }
 ];
+
+const regionCoords = {
+  'Alle': { lat: 50.1109, lon: 8.6821 }, // Frankfurt Default
+  'Oahu (Honolulu)': { lat: 21.3069, lon: -157.8583 },
+  'Maui (Kahului)': { lat: 20.8893, lon: -156.4729 },
+  'Maui': { lat: 20.7984, lon: -156.3319 },
+  'Big Island (Kona)': { lat: 19.64, lon: -155.9969 },
+  'Big Island': { lat: 19.5429, lon: -155.6659 },
+  'Phoenix (Arizona)': { lat: 33.4484, lon: -112.0740 },
+  'Phoenix': { lat: 33.4484, lon: -112.0740 },
+  'Rancho Cucamonga (CA)': { lat: 34.1064, lon: -117.5931 },
+  'Rancho Cucamonga': { lat: 34.1064, lon: -117.5931 },
+  'Los Angeles': { lat: 34.0522, lon: -118.2437 },
+  'Flug': { lat: 34.0522, lon: -118.2437 },
+  'Frankfurt (Ankunft)': { lat: 50.1109, lon: 8.6821 }
+};
 
 const regionVisuals = {
   'Alle': { title: "Gesamte USA & Hawaii Reise", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" },
@@ -51,6 +68,9 @@ export default function App() {
   const [expandedDay, setExpandedDay] = useState(null);
   const [isRegionNotesExpanded, setIsRegionNotesExpanded] = useState(true);
 
+  // Weather State
+  const [weather, setWeather] = useState({ temp: null, loading: true });
+
   // Countdown State
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
 
@@ -72,6 +92,23 @@ export default function App() {
     const interval = setInterval(updateCountdown, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch Weather Data from Open-Meteo API
+  useEffect(() => {
+    const coords = regionCoords[selectedRegion] || regionCoords['Alle'];
+    setWeather({ temp: null, loading: true });
+
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.current_weather) {
+          setWeather({ temp: Math.round(data.current_weather.temperature), loading: false });
+        } else {
+          setWeather({ temp: '--', loading: false });
+        }
+      })
+      .catch(() => setWeather({ temp: '--', loading: false }));
+  }, [selectedRegion]);
 
   // LocalStorage state for daily notes
   const [reminders, setReminders] = useState(() => {
@@ -212,21 +249,34 @@ export default function App() {
           <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
             <div>
               <span className="text-[10px] font-bold tracking-widest text-amber-400 uppercase bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20 backdrop-blur-md">
-                13. Mai – 03. Juni 2027
+                13. Mai – 04. Juni 2027
               </span>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 drop-shadow-md">
                 USA & Hawaii 2027
               </h1>
             </div>
 
-            {/* Countdown Badge */}
-            <div className="bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 flex items-center gap-2.5 shadow-lg">
-              <Clock className="w-4 h-4 text-amber-400 animate-pulse" />
-              <div className="text-right">
-                <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Countdown</p>
-                <p className="text-xs font-bold text-amber-300">
-                  {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m bis Abflug
-                </p>
+            <div className="flex gap-2">
+              {/* Live Weather Widget */}
+              <div className="bg-slate-900/80 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 flex items-center gap-2 shadow-lg">
+                <CloudSun className="w-4 h-4 text-sky-400" />
+                <div className="text-right">
+                  <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Aktuell</p>
+                  <p className="text-xs font-bold text-sky-200">
+                    {weather.loading ? '...' : `${weather.temp}°C`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Countdown Badge */}
+              <div className="bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 flex items-center gap-2.5 shadow-lg">
+                <Clock className="w-4 h-4 text-amber-400 animate-pulse" />
+                <div className="text-right">
+                  <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Countdown</p>
+                  <p className="text-xs font-bold text-amber-300">
+                    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m bis Abflug
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -528,7 +578,7 @@ export default function App() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
               <h3 className="text-xs font-semibold text-emerald-400 mb-1 uppercase tracking-wider">Gesamtdauer</h3>
-              <p className="text-2xl font-black text-slate-100">22 Tage</p>
+              <p className="text-2xl font-black text-slate-100">23 Tage</p>
             </div>
             <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
               <h3 className="text-xs font-semibold text-amber-400 mb-1 uppercase tracking-wider">Stationen</h3>
@@ -536,7 +586,7 @@ export default function App() {
             </div>
             <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
               <h3 className="text-xs font-semibold text-indigo-400 mb-1 uppercase tracking-wider">Flüge</h3>
-              <p className="text-2xl font-black text-slate-100">5 Flugtage</p>
+              <p className="text-2xl font-black text-slate-100">6 Flugsegmente</p>
             </div>
           </div>
         </main>
