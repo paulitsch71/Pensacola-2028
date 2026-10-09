@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, MapPin, Plane, Utensils, ShoppingBag, 
-  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass
+  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree
 } from 'lucide-react';
 
 const initialItinerary = [
-  { id: 1, date: "Do, 13.05.2027", region: "Oahu (Honolulu)", isFlight: true, morning: "Flug von Frankfurt (FRA) nach Honolulu (HNL)", evening: "Landung in Honolulu, Transfer & Hotel-Check-in" },
-  { id: 2, date: "Fr, 14.05.2027", region: "Oahu (Honolulu)", morning: "Freizeit in Honolulu (z. B. Waikiki Beach)", evening: "Entspannung nach dem Langstreckenflug" },
-  { id: 3, date: "Sa, 15.05.2027", region: "Oahu (Honolulu)", morning: "Erkundung von Oahu auf eigene Faust", evening: "Freizeit auf der Hauptinsel" },
-  { id: 4, date: "So, 16.05.2027", region: "Oahu (Honolulu)", morning: "Ausflug oder Strandtag auf Oahu", evening: "Abendstimmung in Honolulu genießen" },
-  { id: 5, date: "Mo, 17.05.2027", region: "Maui (Kahului)", isFlight: true, morning: "Inselwechsel: Flug von Honolulu (HNL) nach Kahului (OGG), Maui", evening: "Mietwagenübernahme & Hotel-Check-in auf Maui" },
-  { id: 6, date: "Di, 18.05.2027", region: "Maui", morning: "Erkundung von Maui (z. B. Road to Hana oder Strände)", evening: "Gemütlicher Abend auf Maui" },
-  { id: 7, date: "Mi, 19.05.2027", region: "Maui", morning: "Freizeit auf Maui / Aktivität nach Wahl", evening: "Entspannung im Resort / Ort" },
-  { id: 8, date: "Do, 20.05.2027", region: "Maui", morning: "Weiterer Tag für Highlight-Spots auf Maui", evening: "Sonnenuntergang genießen" },
-  { id: 9, date: "Fr, 21.05.2027", region: "Big Island (Kona)", isFlight: true, morning: "Inselwechsel: Flug von Kahului (OGG) nach Kona (KOA), Big Island", evening: "Ankunft, Mietwagen & Hotel-Check-in in Kona" },
-  { id: 10, date: "Sa, 22.05.2027", region: "Big Island", morning: "Erkundung der Vulkaninsel (z. B. Kona Coast / Hawaii Volcanoes NP)", evening: "Abend in Kona" },
-  { id: 11, date: "So, 23.05.2027", region: "Big Island", morning: "Freizeit oder Ausflug auf Big Island", evening: "Entspannter Ausklang" },
-  { id: 12, date: "Mo, 24.05.2027", region: "Big Island", morning: "Letzter voller Tag auf Big Island", evening: "Vorbereitung auf den Weiterflug" },
-  { id: 13, date: "Di, 25.05.2027", region: "Phoenix (Arizona)", isFlight: true, morning: "Flug von Kona (KOA) nach Phoenix (PHX)", evening: "Ankunft in Arizona, Transfer & Check-in" },
-  { id: 14, date: "Mi, 26.05.2027", region: "Phoenix", morning: "Erkundung von Phoenix / Scottsdale", evening: "Abendessen & Freizeit in Phoenix" },
-  { id: 15, date: "Do, 27.05.2027", region: "Rancho Cucamonga (CA)", isFlight: true, morning: "Fahrt / Flug nach Rancho Cucamonga, Kalifornien", evening: "Check-in & Entspannung" },
-  { id: 16, date: "Fr, 28.05.2027", region: "Rancho Cucamonga", morning: "Tag in Rancho Cucamonga / Umgebung", evening: "Freizeit" },
-  { id: 17, date: "Sa, 29.05.2027", region: "Los Angeles", morning: "Weiterfahrt nach Los Angeles", evening: "Check-in & erste Eindrücke in LA" },
-  { id: 18, date: "So, 30.05.2027", region: "Los Angeles", morning: "Sightseeing in LA (z. B. Hollywood, Santa Monica)", evening: "Abendprogramm in LA" },
-  { id: 19, date: "Mo, 31.05.2027", region: "Los Angeles", morning: "Freizeit in Los Angeles", evening: "Letzter Abend der Reise" },
-  { id: 20, date: "Di, 01.06.2027", region: "Flug", isFlight: true, morning: "Rückflug ab Los Angeles (LAX)", evening: "Nachtflug Richtung Europa" },
-  { id: 21, date: "Mi, 02.06.2027", region: "Flug", isFlight: true, morning: "Flug / Zwischenstopp", evening: "Weiterflug nach Frankfurt" },
-  { id: 22, date: "Do, 03.06.2027", region: "Frankfurt (Ankunft)", morning: "Ankunft am Flughafen Frankfurt (FRA)", evening: "Heimreise" }
+  { id: 1, date: "Do, 13.05.2027", region: "Oahu (Honolulu)", isFlight: true, isHawaii: true, morning: "Flug von Frankfurt (FRA) nach Honolulu (HNL)", evening: "Landung in Honolulu, Transfer & Hotel-Check-in" },
+  { id: 2, date: "Fr, 14.05.2027", region: "Oahu (Honolulu)", isHawaii: true, morning: "Freizeit in Honolulu (z. B. Waikiki Beach)", evening: "Entspannung nach dem Langstreckenflug" },
+  { id: 3, date: "Sa, 15.05.2027", region: "Oahu (Honolulu)", isHawaii: true, morning: "Erkundung von Oahu auf eigene Faust", evening: "Freizeit auf der Hauptinsel" },
+  { id: 4, date: "So, 16.05.2027", region: "Oahu (Honolulu)", isHawaii: true, morning: "Ausflug oder Strandtag auf Oahu", evening: "Abendstimmung in Honolulu genießen" },
+  { id: 5, date: "Mo, 17.05.2027", region: "Maui (Kahului)", isFlight: true, isHawaii: true, morning: "Inselwechsel: Flug von Honolulu (HNL) nach Kahului (OGG), Maui", evening: "Mietwagenübernahme & Hotel-Check-in auf Maui" },
+  { id: 6, date: "Di, 18.05.2027", region: "Maui", isHawaii: true, morning: "Erkundung von Maui (z. B. Road to Hana oder Strände)", evening: "Gemütlicher Abend auf Maui" },
+  { id: 7, date: "Mi, 19.05.2027", region: "Maui", isHawaii: true, morning: "Freizeit auf Maui / Aktivität nach Wahl", evening: "Entspannung im Resort / Ort" },
+  { id: 8, date: "Do, 20.05.2027", region: "Maui", isHawaii: true, morning: "Weiterer Tag für Highlight-Spots auf Maui", evening: "Sonnenuntergang genießen" },
+  { id: 9, date: "Fr, 21.05.2027", region: "Big Island (Kona)", isFlight: true, isHawaii: true, morning: "Inselwechsel: Flug von Kahului (OGG) nach Kona (KOA), Big Island", evening: "Ankunft, Mietwagen & Hotel-Check-in in Kona" },
+  { id: 10, date: "Sa, 22.05.2027", region: "Big Island", isHawaii: true, morning: "Erkundung der Vulkaninsel (z. B. Kona Coast / Hawaii Volcanoes NP)", evening: "Abend in Kona" },
+  { id: 11, date: "So, 23.05.2027", region: "Big Island", isHawaii: true, morning: "Freizeit oder Ausflug auf Big Island", evening: "Entspannter Ausklang" },
+  { id: 12, date: "Mo, 24.05.2027", region: "Big Island (Kona)", isFlight: true, isHawaii: true, morning: "Letzter Tag auf Big Island / Abreisevorbereitung", evening: "Nachtflug AA 664 von Kona (KOA, 21:55 Uhr) nach Phoenix (PHX)" },
+  { id: 13, date: "Di, 25.05.2027", region: "Phoenix (Arizona)", isFlight: true, isHawaii: false, morning: "Ankunft in Phoenix (PHX, 06:47 Uhr)", evening: "Transfer, Hotel-Check-in & Entspannung" },
+  { id: 14, date: "Mi, 26.05.2027", region: "Phoenix", isHawaii: false, morning: "Erkundung von Phoenix / Scottsdale", evening: "Abendessen & Freizeit in Phoenix" },
+  { id: 15, date: "Do, 27.05.2027", region: "Rancho Cucamonga (CA)", isFlight: true, isHawaii: false, morning: "Fahrt / Flug nach Rancho Cucamonga, Kalifornien", evening: "Check-in & Entspannung" },
+  { id: 16, date: "Fr, 28.05.2027", region: "Rancho Cucamonga", isHawaii: false, morning: "Tag in Rancho Cucamonga / Umgebung", evening: "Freizeit" },
+  { id: 17, date: "Sa, 29.05.2027", region: "Los Angeles", isHawaii: false, morning: "Weiterfahrt nach Los Angeles", evening: "Check-in & erste Eindrücke in LA" },
+  { id: 18, date: "So, 30.05.2027", region: "Los Angeles", isHawaii: false, morning: "Sightseeing in LA (z. B. Hollywood, Santa Monica)", evening: "Abendprogramm in LA" },
+  { id: 19, date: "Mo, 31.05.2027", region: "Los Angeles", isHawaii: false, morning: "Freizeit in Los Angeles", evening: "Letzter Abend der Reise" },
+  { id: 20, date: "Di, 01.06.2027", region: "Flug", isFlight: true, isHawaii: false, morning: "Rückflug ab Los Angeles (LAX)", evening: "Nachtflug Richtung Europa" },
+  { id: 21, date: "Mi, 02.06.2027", region: "Flug", isFlight: true, isHawaii: false, morning: "Flug / Zwischenstopp", evening: "Weiterflug nach Frankfurt" },
+  { id: 22, date: "Do, 03.06.2027", region: "Frankfurt (Ankunft)", isHawaii: false, morning: "Ankunft am Flughafen Frankfurt (FRA)", evening: "Heimreise" }
 ];
 
 const regionVisuals = {
@@ -36,8 +36,8 @@ const regionVisuals = {
   'Maui': { title: "Maui – Natur & Sonnenuntergänge", bg: "https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=1200&q=80" },
   'Big Island (Kona)': { title: "Big Island – Vulkanlandschaften & Kona", bg: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" },
   'Big Island': { title: "Big Island – Abenteuer & Küste", bg: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" },
-  'Phoenix (Arizona)': { title: "Phoenix – Wüstenzauber & Canyons", bg: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80" },
-  'Phoenix': { title: "Phoenix & Umgebung", bg: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80" },
+  'Phoenix (Arizona)': { title: "Phoenix – Wüstenzauber & Canyons", bg: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=1200&q=80" },
+  'Phoenix': { title: "Phoenix & Umgebung", bg: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=1200&q=80" },
   'Rancho Cucamonga (CA)': { title: "Rancho Cucamonga – Sonne in Kalifornien", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
   'Rancho Cucamonga': { title: "Rancho Cucamonga", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
   'Los Angeles': { title: "Los Angeles – Hollywood & Pacific Coast", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
@@ -178,10 +178,12 @@ export default function App() {
 
   const activeVisual = regionVisuals[selectedRegion] || regionVisuals['Alle'];
 
+  const isSelectedHawaii = initialItinerary.find(i => i.region === selectedRegion)?.isHawaii;
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-3 sm:p-6 font-sans relative overflow-x-hidden">
       {/* Background Glow Accents */}
-      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Banner */}
@@ -236,39 +238,63 @@ export default function App() {
           {/* Region Filter Bar (Glassmorphism) */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none bg-slate-900/40 p-2 rounded-2xl border border-white/5 backdrop-blur-md">
             <Compass className="w-4 h-4 text-blue-400 ml-2 flex-shrink-0" />
-            {regions.map(r => (
-              <button
-                key={r}
-                onClick={() => setSelectedRegion(r)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${selectedRegion === r ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border border-blue-400/30' : 'bg-slate-800/40 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 border border-white/5'}`}
-              >
-                {r}
-              </button>
-            ))}
+            {regions.map(r => {
+              const isHaw = initialItinerary.find(i => i.region === r)?.isHawaii;
+              return (
+                <button
+                  key={r}
+                  onClick={() => setSelectedRegion(r)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                    selectedRegion === r 
+                      ? (isHaw 
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg border border-teal-400/40' 
+                          : 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg border border-orange-400/40')
+                      : 'bg-slate-800/40 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 border border-white/5'
+                  }`}
+                >
+                  {isHaw && <Palmtree className="w-3 h-3 text-teal-300" />}
+                  {!isHaw && r !== 'Alle' && r !== 'Flug' && r !== 'Frankfurt (Ankunft)' && <Sun className="w-3 h-3 text-amber-400" />}
+                  {r}
+                </button>
+              );
+            })}
           </div>
 
           {/* Region Overview Card (Glassmorphism) */}
-          <div className="bg-gradient-to-b from-indigo-950/40 to-slate-900/60 rounded-2xl border border-indigo-500/20 shadow-xl overflow-hidden backdrop-blur-xl">
+          <div className={`rounded-2xl border shadow-xl overflow-hidden backdrop-blur-xl transition-all ${
+            isSelectedHawaii 
+              ? 'bg-gradient-to-b from-teal-950/40 to-slate-900/60 border-teal-500/30' 
+              : 'bg-gradient-to-b from-orange-950/30 to-slate-900/60 border-orange-500/20'
+          }`}>
             <button 
               onClick={() => setIsRegionNotesExpanded(!isRegionNotesExpanded)}
-              className="w-full p-4 flex items-center justify-between text-left bg-indigo-900/20 hover:bg-indigo-900/30 transition-all"
+              className={`w-full p-4 flex items-center justify-between text-left transition-all ${
+                isSelectedHawaii ? 'bg-teal-900/20 hover:bg-teal-900/30' : 'bg-orange-900/20 hover:bg-orange-900/30'
+              }`}
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                <div className={`p-2 rounded-xl border ${
+                  isSelectedHawaii ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' : 'bg-orange-500/20 text-orange-300 border-orange-500/30'
+                }`}>
                   <Bookmark className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-indigo-100 text-sm">
-                    Allgemeine Notizen für: <span className="text-amber-300">{selectedRegion}</span>
+                  <h3 className="font-bold text-slate-100 text-sm flex items-center gap-2">
+                    Allgemeine Notizen für: 
+                    <span className={isSelectedHawaii ? 'text-teal-300 font-extrabold' : 'text-amber-400 font-extrabold'}>
+                      {selectedRegion}
+                    </span>
                   </h3>
-                  <p className="text-[11px] text-indigo-300/70">Insel- & zielortübergreifende Tipps ({totalRegionNotes} Einträge)</p>
+                  <p className="text-[11px] text-slate-400">
+                    {isSelectedHawaii ? '🏝️ Hawaii-Insel Tipps' : '🏜️ Festland / USA Tipps'} ({totalRegionNotes} Einträge)
+                  </p>
                 </div>
               </div>
-              {isRegionNotesExpanded ? <ChevronUp className="w-5 h-5 text-indigo-300" /> : <ChevronDown className="w-5 h-5 text-indigo-300" />}
+              {isRegionNotesExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
             </button>
 
             {isRegionNotesExpanded && (
-              <div className="p-4 bg-slate-950/80 border-t border-indigo-500/10 space-y-4">
+              <div className="p-4 bg-slate-950/80 border-t border-white/5 space-y-4">
                 {/* Food Category */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
@@ -286,7 +312,7 @@ export default function App() {
                     <input 
                       type="text" 
                       placeholder={`Neuer Restaurant-Tipp für ${selectedRegion}...`}
-                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 placeholder:text-slate-500"
+                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 text-slate-200 placeholder:text-slate-500"
                       value={inputState[`reg-${selectedRegion}-food`] || ''}
                       onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-food`]: e.target.value })}
                       onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'food')}
@@ -312,7 +338,7 @@ export default function App() {
                     <input 
                       type="text" 
                       placeholder={`Shopping-Tipp für ${selectedRegion}...`}
-                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 placeholder:text-slate-500"
+                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 text-slate-200 placeholder:text-slate-500"
                       value={inputState[`reg-${selectedRegion}-shopping`] || ''}
                       onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-shopping`]: e.target.value })}
                       onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'shopping')}
@@ -338,7 +364,7 @@ export default function App() {
                     <input 
                       type="text" 
                       placeholder={`Reminder/Highlight für ${selectedRegion}...`}
-                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 placeholder:text-slate-500"
+                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 text-slate-200 placeholder:text-slate-500"
                       value={inputState[`reg-${selectedRegion}-misc`] || ''}
                       onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-misc`]: e.target.value })}
                       onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'misc')}
@@ -367,8 +393,16 @@ export default function App() {
                         </div>
                         <h2 className="font-bold text-slate-100 text-base">{item.date}</h2>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md ${item.isFlight ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}`}>
-                        {item.isFlight ? <Plane className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}
+                      
+                      {/* Region Badge (Hawaii vs. Festland) */}
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md ${
+                        item.isFlight 
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
+                          : (item.isHawaii 
+                              ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' 
+                              : 'bg-orange-500/20 text-orange-300 border border-orange-500/30')
+                      }`}>
+                        {item.isFlight ? <Plane className="w-3 h-3" /> : (item.isHawaii ? <Palmtree className="w-3 h-3" /> : <MapPin className="w-3 h-3" />)}
                         {item.region}
                       </span>
                     </div>
