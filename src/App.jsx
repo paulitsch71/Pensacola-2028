@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, MapPin, Plane, Utensils, ShoppingBag, 
-  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree, CloudSun
+  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree, CloudSun, Waves
 } from 'lucide-react';
 
 const initialItinerary = [
@@ -31,19 +31,19 @@ const initialItinerary = [
 ];
 
 const regionCoords = {
-  'Alle': { lat: 50.1109, lon: 8.6821 }, // Frankfurt Default
-  'Oahu (Honolulu)': { lat: 21.3069, lon: -157.8583 },
-  'Maui (Kahului)': { lat: 20.8893, lon: -156.4729 },
-  'Maui': { lat: 20.7984, lon: -156.3319 },
-  'Big Island (Kona)': { lat: 19.64, lon: -155.9969 },
-  'Big Island': { lat: 19.5429, lon: -155.6659 },
-  'Phoenix (Arizona)': { lat: 33.4484, lon: -112.0740 },
-  'Phoenix': { lat: 33.4484, lon: -112.0740 },
-  'Rancho Cucamonga (CA)': { lat: 34.1064, lon: -117.5931 },
-  'Rancho Cucamonga': { lat: 34.1064, lon: -117.5931 },
-  'Los Angeles': { lat: 34.0522, lon: -118.2437 },
-  'Flug': { lat: 34.0522, lon: -118.2437 },
-  'Frankfurt (Ankunft)': { lat: 50.1109, lon: 8.6821 }
+  'Alle': { lat: 50.1109, lon: 8.6821, waterTemp: null },
+  'Oahu (Honolulu)': { lat: 21.3069, lon: -157.8583, waterTemp: "26°C" },
+  'Maui (Kahului)': { lat: 20.8893, lon: -156.4729, waterTemp: "26°C" },
+  'Maui': { lat: 20.7984, lon: -156.3319, waterTemp: "26°C" },
+  'Big Island (Kona)': { lat: 19.64, lon: -155.9969, waterTemp: "26°C" },
+  'Big Island': { lat: 19.5429, lon: -155.6659, waterTemp: "26°C" },
+  'Phoenix (Arizona)': { lat: 33.4484, lon: -112.0740, waterTemp: null },
+  'Phoenix': { lat: 33.4484, lon: -112.0740, waterTemp: null },
+  'Rancho Cucamonga (CA)': { lat: 34.1064, lon: -117.5931, waterTemp: null },
+  'Rancho Cucamonga': { lat: 34.1064, lon: -117.5931, waterTemp: null },
+  'Los Angeles': { lat: 34.0522, lon: -118.2437, waterTemp: "17°C" },
+  'Flug': { lat: 34.0522, lon: -118.2437, waterTemp: null },
+  'Frankfurt (Ankunft)': { lat: 50.1109, lon: 8.6821, waterTemp: null }
 };
 
 const regionVisuals = {
@@ -216,6 +216,7 @@ export default function App() {
   const activeVisual = regionVisuals[selectedRegion] || regionVisuals['Alle'];
 
   const isSelectedHawaii = initialItinerary.find(i => i.region === selectedRegion)?.isHawaii;
+  const currentWaterTemp = regionCoords[selectedRegion]?.waterTemp;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-3 sm:p-6 font-sans relative overflow-x-hidden">
@@ -256,17 +257,28 @@ export default function App() {
               </h1>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {/* Live Weather Widget */}
               <div className="bg-slate-900/80 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 flex items-center gap-2 shadow-lg">
                 <CloudSun className="w-4 h-4 text-sky-400" />
                 <div className="text-right">
-                  <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Aktuell</p>
+                  <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Luft</p>
                   <p className="text-xs font-bold text-sky-200">
                     {weather.loading ? '...' : `${weather.temp}°C`}
                   </p>
                 </div>
               </div>
+
+              {/* Water Temperature Widget (Only if coastal) */}
+              {currentWaterTemp && (
+                <div className="bg-slate-900/80 backdrop-blur-md px-3 py-2 rounded-xl border border-teal-500/30 flex items-center gap-2 shadow-lg">
+                  <Waves className="w-4 h-4 text-teal-300" />
+                  <div className="text-right">
+                    <p className="text-[9px] uppercase tracking-wider text-teal-300 font-medium">Wasser</p>
+                    <p className="text-xs font-bold text-teal-200">{currentWaterTemp}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Countdown Badge */}
               <div className="bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 flex items-center gap-2.5 shadow-lg">
@@ -274,7 +286,7 @@ export default function App() {
                 <div className="text-right">
                   <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Countdown</p>
                   <p className="text-xs font-bold text-amber-300">
-                    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m bis Abflug
+                    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
                   </p>
                 </div>
               </div>
