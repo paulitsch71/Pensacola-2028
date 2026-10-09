@@ -62,6 +62,18 @@ const regionVisuals = {
   'Frankfurt (Ankunft)': { title: "Ankunft in Deutschland", bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" }
 };
 
+const defaultOahuFood = [
+  "Raising Cane’s Chicken Fingers",
+  "Jack in the Box",
+  "Kahuku Food Trucks (North Shore)",
+  "Sabrozon Mexican Food Truck",
+  "Domino’s Pizza",
+  "Taco Bell",
+  "Jersey Mike’s Subs",
+  "Popeyes Louisiana Kitchen",
+  "Chick-fil-A"
+];
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('plan');
   const [selectedRegion, setSelectedRegion] = useState('Alle');
@@ -119,7 +131,15 @@ export default function App() {
   // LocalStorage state for destination/region notes
   const [regionReminders, setRegionReminders] = useState(() => {
     const saved = localStorage.getItem('usa2027_region_reminders');
-    return saved ? JSON.parse(saved) : {};
+    const parsed = saved ? JSON.parse(saved) : {};
+
+    // Initial default food tips for Oahu if none exist yet
+    if (!parsed["Oahu (Honolulu)"]) {
+      parsed["Oahu (Honolulu)"] = { food: defaultOahuFood, shopping: [], misc: [] };
+    } else if (!parsed["Oahu (Honolulu)"].food || parsed["Oahu (Honolulu)"].food.length === 0) {
+      parsed["Oahu (Honolulu)"].food = defaultOahuFood;
+    }
+    return parsed;
   });
 
   const [inputState, setInputState] = useState({});
@@ -269,7 +289,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Water Temperature Widget (Only if coastal) */}
+              {/* Water Temperature Widget */}
               {currentWaterTemp && (
                 <div className="bg-slate-900/80 backdrop-blur-md px-3 py-2 rounded-xl border border-teal-500/30 flex items-center gap-2 shadow-lg">
                   <Waves className="w-4 h-4 text-teal-300" />
@@ -456,7 +476,7 @@ export default function App() {
                         <h2 className="font-bold text-slate-100 text-base">{item.date}</h2>
                       </div>
                       
-                      {/* Region Badge (Hawaii vs. Festland) */}
+                      {/* Region Badge */}
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md ${
                         item.isFlight 
                           ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
