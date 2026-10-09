@@ -1,102 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, MapPin, Plane, Utensils, ShoppingBag, 
-  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree, CloudSun, Waves
+  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass, Sun, Palmtree, CloudSun, Waves, Car
 } from 'lucide-react';
 
 const initialItinerary = [
-  { id: 1, date: "Do, 13.05.2027", region: "Flug", isFlight: true, isHawaii: true, morning: "Flug DE 2096: FRA 11:55 Uhr ✈️ 14:40 Uhr SFO (San Francisco)", evening: "Flug AS 861: SFO 19:55 Uhr ✈️ 22:45 Uhr HNL (Honolulu)" },
-  { id: 2, date: "Fr, 14.05.2027", region: "Oahu (Honolulu)", isHawaii: true, morning: "Freizeit in Honolulu (z. B. Waikiki Beach)", evening: "Entspannung nach dem Langstreckenflug" },
-  { id: 3, date: "Sa, 15.05.2027", region: "Oahu (Honolulu)", isHawaii: true, morning: "Erkundung von Oahu auf eigene Faust", evening: "Freizeit auf der Hauptinsel" },
-  { id: 4, date: "So, 16.05.2027", region: "Oahu (Honolulu)", isHawaii: true, morning: "Ausflug oder Strandtag auf Oahu", evening: "Abendstimmung in Honolulu genießen" },
-  { id: 5, date: "Mo, 17.05.2027", region: "Maui (Kahului)", isFlight: true, isHawaii: true, morning: "Inselwechsel: Flug von Honolulu (HNL) nach Kahului (OGG), Maui", evening: "Mietwagenübernahme & Hotel-Check-in auf Maui" },
-  { id: 6, date: "Di, 18.05.2027", region: "Maui", isHawaii: true, morning: "Erkundung von Maui (z. B. Road to Hana oder Strände)", evening: "Gemütlicher Abend auf Maui" },
-  { id: 7, date: "Mi, 19.05.2027", region: "Maui", isHawaii: true, morning: "Freizeit auf Maui / Aktivität nach Wahl", evening: "Entspannung im Resort / Ort" },
-  { id: 8, date: "Do, 20.05.2027", region: "Maui", isHawaii: true, morning: "Weiterer Tag für Highlight-Spots auf Maui", evening: "Sonnenuntergang genießen" },
-  { id: 9, date: "Fr, 21.05.2027", region: "Big Island (Kona)", isFlight: true, isHawaii: true, morning: "Inselwechsel: Flug von Kahului (OGG) nach Kona (KOA), Big Island", evening: "Ankunft, Mietwagen & Hotel-Check-in in Kona" },
-  { id: 10, date: "Sa, 22.05.2027", region: "Big Island", isHawaii: true, morning: "Erkundung der Vulkaninsel (z. B. Kona Coast / Hawaii Volcanoes NP)", evening: "Abend in Kona" },
-  { id: 11, date: "So, 23.05.2027", region: "Big Island", isHawaii: true, morning: "Freizeit oder Ausflug auf Big Island", evening: "Entspannter Ausklang" },
-  { id: 12, date: "Mo, 24.05.2027", region: "Flug", isFlight: true, isHawaii: true, morning: "Letzter Tag auf Big Island / Abreisevorbereitung", evening: "Flug AA 664: KOA 21:55 Uhr ✈️ 06:47 Uhr PHX (Phoenix, Ankunft 25.05.)" },
-  { id: 13, date: "Di, 25.05.2027", region: "Phoenix (Arizona)", isFlight: true, isHawaii: false, morning: "Ankunft in Phoenix (PHX) um 06:47 Uhr morgens", evening: "Transfer, Hotel-Check-in & Entspannung" },
-  { id: 14, date: "Mi, 26.05.2027", region: "Phoenix", isHawaii: false, morning: "Erkundung von Phoenix / Scottsdale", evening: "Abendessen & Freizeit in Phoenix" },
-  { id: 15, date: "Do, 27.05.2027", region: "Rancho Cucamonga (CA)", isFlight: true, isHawaii: false, morning: "Fahrt / Weiterreise nach Rancho Cucamonga, Kalifornien", evening: "Check-in & Entspannung" },
-  { id: 16, date: "Fr, 28.05.2027", region: "Rancho Cucamonga", isHawaii: false, morning: "Tag in Rancho Cucamonga / Umgebung", evening: "Freizeit" },
-  { id: 17, date: "Sa, 29.05.2027", region: "Los Angeles", isHawaii: false, morning: "Weiterfahrt nach Los Angeles", evening: "Check-in & erste Eindrücke in LA" },
-  { id: 18, date: "So, 30.05.2027", region: "Los Angeles", isHawaii: false, morning: "Sightseeing in LA (z. B. Hollywood, Santa Monica)", evening: "Abendprogramm in LA" },
-  { id: 19, date: "Mo, 31.05.2027", region: "Los Angeles", isHawaii: false, morning: "Freizeit in Los Angeles", evening: "Letzter Abend der Reise" },
-  { id: 20, date: "Di, 01.06.2027", region: "Los Angeles", isHawaii: false, morning: "Freizeit & Entspannung in Los Angeles", evening: "Abend in LA" },
-  { id: 21, date: "Mi, 02.06.2027", region: "Los Angeles", isHawaii: false, morning: "Vorbereitung auf die Heimreise", evening: "Koffer packen & Ausklang" },
-  { id: 22, date: "Do, 03.06.2027", region: "Flug", isFlight: true, isHawaii: false, morning: "Flug AS 1403: LAX 13:29 Uhr ✈️ 14:55 Uhr SFO", evening: "Flug DE 2097: SFO 16:40 Uhr ✈️ Richtung Frankfurt" },
-  { id: 23, date: "Fr, 04.06.2027", region: "Frankfurt (Ankunft)", isFlight: true, isHawaii: false, morning: "Ankunft am Flughafen Frankfurt (FRA) um 12:45 Uhr", evening: "Heimreise & Urlaubsabschluss" }
+  { id: 1, date: "Mi, 20.05.2028", region: "Pensacola", isFlight: true, isFlorida: true, morning: "Ankunft & Landung in Pensacola", evening: "Mietwagenübernahme & Hotel-Check-in am Golf von Mexiko" },
+  { id: 2, date: "Do, 21.05.2028", region: "Baton Rouge (LA)", isFlight: false, isFlorida: false, morning: "Fahrt von Pensacola nach Baton Rouge (~4,5 Std.)", evening: "Ankunft, Check-in & Entspannung in Louisiana" },
+  { id: 3, date: "Fr, 22.05.2028", region: "Houston (TX)", isFlight: false, isFlorida: false, morning: "Fahrt von Baton Rouge nach Houston (~4,5 Std.)", evening: "Ankunft in Texas & erster Abend in Houston" },
+  { id: 4, date: "Sa, 23.05.2028", region: "Houston", isFlight: false, isFlorida: false, morning: "Erkundung von Houston & Shopping-Tag", evening: "Abendessen & Freizeit in Houston" },
+  { id: 5, date: "So, 24.05.2028", region: "Houston", isFlight: false, isFlorida: false, morning: "Freizeit oder Ausflug in Houston (z. B. NASA Space Center)", evening: "Gemütlicher Ausklang in Houston" },
+  { id: 6, date: "Mo, 25.05.2028", region: "Houston", isFlight: false, isFlorida: false, morning: "Weiterer Tag für Malls, Outlets & Kultur in Houston", evening: "Abend in Houston genießen" },
+  { id: 7, date: "Di, 26.05.2028", region: "Dallas (TX)", isFlight: false, isFlorida: false, morning: "Fahrt von Houston nach Dallas (~3,5 Std.)", evening: "Ankunft in Dallas & Hotel-Check-in" },
+  { id: 8, date: "Mi, 27.05.2028", region: "Dallas", isFlight: false, isFlorida: false, morning: "Erkundung von Dallas & Mega-Shopping", evening: "Abendprogramm in Dallas" },
+  { id: 9, date: "Do, 28.05.2028", region: "Dallas", isFlight: false, isFlorida: false, morning: "Outlets & Sehenswürdigkeiten in der Dallas-Region", evening: "Freizeit in Dallas" },
+  { id: 10, date: "Fr, 29.05.2028", region: "Dallas", isFlight: false, isFlorida: false, morning: "Letzter voller Tag in Dallas für Shopping & Co.", evening: "Besonderes Abendessen in Dallas" },
+  { id: 11, date: "Sa, 30.05.2028", region: "Vicksburg (MS)", isFlight: false, isFlorida: false, morning: "Fahrt von Dallas nach Vicksburg, Mississippi (~5 Std.)", evening: "Ankunft & geschichtsträchtiger Abend am Mississippi River" },
+  { id: 12, date: "So, 31.05.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Rückfahrt von Vicksburg nach Pensacola (~5 Std.)", evening: "Zurück an der Küste von Florida – Willkommen im Paradies!" },
+  { id: 13, date: "Mo, 01.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Erster Strandtag in Pensacola Beach", evening: "Sonnenuntergang am Golf von Mexiko" },
+  { id: 14, date: "Di, 02.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Entspannung & Freizeit in Pensacola", evening: "Gemütlicher Abend" },
+  { id: 15, date: "Mi, 03.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Ausflug oder Strandtag in Pensacola", evening: "Abendessen in der Coastal City" },
+  { id: 16, date: "Do, 04.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Freizeit in Pensacola", evening: "Entspannter Ausklang" },
+  { id: 17, date: "Fr, 05.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Wochenend-Feeling in Pensacola Beach", evening: "Nachtleben / Abend genießen" },
+  { id: 18, date: "Sa, 06.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Strand, Sonne & Erholung", evening: "Gemeinsamer Abend" },
+  { id: 19, date: "So, 07.06.2028", region: "Pensacola", isFlight: false, isFlorida: true, morning: "Letzter ganzer Tag am Strand von Pensacola", evening: "Abschiedsessen am Meer" },
+  { id: 20, date: "Mo, 08.06.2028", region: "Pensacola", isFlight: true, isFlorida: true, morning: "Letzte Souvenirs & Abreisevorbereitung", evening: "Rückflug / Abflug ab Pensacola" },
+  { id: 21, date: "Di, 09.06.2028", region: "Frankfurt (Ankunft)", isFlight: true, isFlorida: false, morning: "Ankunft am Flughafen Frankfurt (FRA)", evening: "Heimreise & Urlaubsabschluss" }
 ];
 
 const regionCoords = {
-  'Alle': { lat: 50.1109, lon: 8.6821, waterTemp: null },
-  'Oahu (Honolulu)': { lat: 21.3069, lon: -157.8583, waterTemp: "26°C" },
-  'Maui (Kahului)': { lat: 20.8893, lon: -156.4729, waterTemp: "26°C" },
-  'Maui': { lat: 20.7984, lon: -156.3319, waterTemp: "26°C" },
-  'Big Island (Kona)': { lat: 19.64, lon: -155.9969, waterTemp: "26°C" },
-  'Big Island': { lat: 19.5429, lon: -155.6659, waterTemp: "26°C" },
-  'Phoenix (Arizona)': { lat: 33.4484, lon: -112.0740, waterTemp: null },
-  'Phoenix': { lat: 33.4484, lon: -112.0740, waterTemp: null },
-  'Rancho Cucamonga (CA)': { lat: 34.1064, lon: -117.5931, waterTemp: null },
-  'Rancho Cucamonga': { lat: 34.1064, lon: -117.5931, waterTemp: null },
-  'Los Angeles': { lat: 34.0522, lon: -118.2437, waterTemp: "17°C" },
-  'Flug': { lat: 34.0522, lon: -118.2437, waterTemp: null },
+  'Alle': { lat: 30.4213, lon: -87.2169, waterTemp: "27°C" },
+  'Pensacola': { lat: 30.4213, lon: -87.2169, waterTemp: "27°C" },
+  'Baton Rouge (LA)': { lat: 30.4515, lon: -91.1871, waterTemp: null },
+  'Houston (TX)': { lat: 29.7604, lon: -95.3698, waterTemp: null },
+  'Houston': { lat: 29.7604, lon: -95.3698, waterTemp: null },
+  'Dallas (TX)': { lat: 32.7767, lon: -96.7970, waterTemp: null },
+  'Dallas': { lat: 32.7767, lon: -96.7970, waterTemp: null },
+  'Vicksburg (MS)': { lat: 32.3526, lon: -90.8779, waterTemp: null },
   'Frankfurt (Ankunft)': { lat: 50.1109, lon: 8.6821, waterTemp: null }
 };
 
 const regionVisuals = {
-  'Alle': { title: "Gesamte USA & Hawaii Reise", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" },
-  'Oahu (Honolulu)': { title: "Oahu – Waikiki & Pearl Harbor", bg: "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80" },
-  'Maui (Kahului)': { title: "Maui – Road to Hana & Strände", bg: "https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=1200&q=80" },
-  'Maui': { title: "Maui – Natur & Sonnenuntergänge", bg: "https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=1200&q=80" },
-  'Big Island (Kona)': { title: "Big Island – Vulkanlandschaften & Kona", bg: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" },
-  'Big Island': { title: "Big Island – Abenteuer & Küste", bg: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" },
-  'Phoenix (Arizona)': { title: "Phoenix – Wüstenzauber & Canyons", bg: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80" },
-  'Phoenix': { title: "Phoenix & Umgebung", bg: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80" },
-  'Rancho Cucamonga (CA)': { title: "Rancho Cucamonga – Sonne in Kalifornien", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
-  'Rancho Cucamonga': { title: "Rancho Cucamonga", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
-  'Los Angeles': { title: "Los Angeles – Hollywood & Pacific Coast", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
-  'Flug': { title: "Flug & Weiterreise", bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" },
+  'Alle': { title: "Pensacola & Südstaaten Roadtrip 2028", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" },
+  'Pensacola': { title: "Pensacola – Traummenschen & weißer Sand", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" },
+  'Baton Rouge (LA)': { title: "Baton Rouge – Louisiana Vibes", bg: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=1200&q=80" },
+  'Houston (TX)': { title: "Houston – Space City & Shopping", bg: "https://images.unsplash.com/photo-1531219436234-972d3c91d88a?auto=format&fit=crop&w=1200&q=80" },
+  'Houston': { title: "Houston – Metropole in Texas", bg: "https://images.unsplash.com/photo-1531219436234-972d3c91d88a?auto=format&fit=crop&w=1200&q=80" },
+  'Dallas (TX)': { title: "Dallas – Big D & Malls", bg: "https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1200&q=80" },
+  'Dallas': { title: "Dallas – Texas Lifestyle", bg: "https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1200&q=80" },
+  'Vicksburg (MS)': { title: "Vicksburg – Mississippi Geschichte", bg: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80" },
   'Frankfurt (Ankunft)': { title: "Ankunft in Deutschland", bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" }
 };
 
-const defaultOahuFood = [
-  "Black Angus Steakhouse - Pearl City (So–Do 11:15 – 20:45 | Fr–Sa 11:15 – 21:45 Uhr)",
-  "Raising Cane’s Chicken Fingers (Täglich 10:00 – 23:00 Uhr)",
-  "Jack in the Box (24 Std. geöffnet / Drive-Thru)",
-  "Kahuku Food Trucks - North Shore (Täglich ca. 10:00 – 18:00 Uhr)",
-  "Sabrozon Mexican Food Truck (Täglich 11:15 – 19:45 Uhr)",
-  "Domino’s Pizza (Täglich 10:00 – 00:00/01:00 Uhr)",
-  "Taco Bell (Täglich 07:00 – 01:00 Uhr)",
-  "Jersey Mike’s Subs (Täglich 10:00 – 21:00 Uhr)",
-  "Popeyes Louisiana Kitchen (Täglich 10:00 – 22:00 Uhr)",
-  "Chick-fil-A (Mo–Sa 06:30 – 22:00 Uhr | So geschl.)"
+const defaultBatonRougeShopping = [
+  "Tanger Outlet Gonzales"
 ];
 
-const defaultMauiShopping = [
-  "3x Ross Dress for Less (Täglich 08:00 – 22:30 Uhr)",
-  "⚠️ Achtung: Kein Marshalls auf Maui!",
-  "T.J. Maxx - Kahului (Mo–Sa 09:30 – 21:30 | So 10:00 – 20:00 Uhr)",
-  "Walmart (Täglich 06:00 – 23:00 Uhr)",
-  "Target (Täglich 07:00 – 22:00 Uhr)",
-  "Maui Mall Village (Täglich 07:00 – 21:00 Uhr)",
-  "Queen Ka'ahumanu Center (Täglich 10:00 – 20:00 Uhr)",
-  "The Shops at Wailea - incl. Louis Vuitton (Täglich 10:00 – 21:00 Uhr)",
-  "Whalers Village - incl. Louis Vuitton (Täglich 09:00 – 21:00 Uhr)"
+const defaultHoustonShopping = [
+  "Houston Tanger Outlet",
+  "Katy Mills Mall + Outlet",
+  "Houston Premium Outlet",
+  "The Woodlands Market (offene Mall, inkl. Louis Vuitton)",
+  "The Galleria Mall (inkl. Louis Vuitton)",
+  "Memorial City Mall"
 ];
 
-const defaultMauiMisc = [
-  "Road to Hāna (hin & zurück ~115 Mi. / 4,5 Std. Reine Fahrzeit + Stopps -> 1 ganzen Tag einplanen!)",
-  "Hāna Lava Tube (Ka'eleku Caverns - Vulkanhöhle bei Hāna)"
-];
-
-const defaultBigIslandShopping = [
-  "KTA Super Stores (Täglich 06:00 – 21:00/22:00 Uhr)",
-  "Safeway - Kona/Hilo (24 Std. geöffnet)",
-  "Foodland (Täglich 06:00 – 21:00 Uhr)",
-  "Island Naturals Market & Deli (Täglich 08:00 – 19:00 Uhr)"
+const defaultDallasShopping = [
+  "Fort Worth Tanger Outlet",
+  "Grand Prairie Premium Outlet",
+  "Allen Premium Outlet",
+  "Grapevine Mills Mall + Outlet",
+  "Northpark Center Mall (inkl. Louis Vuitton)",
+  "Galleria Dallas Mall (inkl. Louis Vuitton)"
 ];
 
 export default function App() {
@@ -112,7 +87,7 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
 
   useEffect(() => {
-    const targetDate = new Date('2027-05-13T06:00:00');
+    const targetDate = new Date('2028-05-20T12:00:00');
     const updateCountdown = () => {
       const now = new Date();
       const difference = targetDate - now;
@@ -149,48 +124,44 @@ export default function App() {
 
   // LocalStorage state for daily notes
   const [reminders, setReminders] = useState(() => {
-    const saved = localStorage.getItem('usa2027_reminders');
+    const saved = localStorage.getItem('pensacola2028_reminders');
     return saved ? JSON.parse(saved) : {};
   });
 
   // LocalStorage state for destination/region notes
   const [regionReminders, setRegionReminders] = useState(() => {
-    const saved = localStorage.getItem('usa2027_region_reminders');
+    const saved = localStorage.getItem('pensacola2028_region_reminders');
     const parsed = saved ? JSON.parse(saved) : {};
 
-    // Oahu defaults
-    if (!parsed["Oahu (Honolulu)"]) {
-      parsed["Oahu (Honolulu)"] = { food: defaultOahuFood, shopping: [], misc: [] };
+    // Baton Rouge defaults
+    if (!parsed["Baton Rouge (LA)"]) {
+      parsed["Baton Rouge (LA)"] = { food: [], shopping: defaultBatonRougeShopping, misc: [] };
     } else {
-      parsed["Oahu (Honolulu)"].food = defaultOahuFood;
+      parsed["Baton Rouge (LA)"].shopping = defaultBatonRougeShopping;
     }
 
-    // Maui defaults
-    if (!parsed["Maui"]) {
-      parsed["Maui"] = { food: [], shopping: defaultMauiShopping, misc: defaultMauiMisc };
+    // Houston defaults
+    if (!parsed["Houston (TX)"]) {
+      parsed["Houston (TX)"] = { food: [], shopping: defaultHoustonShopping, misc: [] };
     } else {
-      parsed["Maui"].shopping = defaultMauiShopping;
-      parsed["Maui"].misc = defaultMauiMisc;
+      parsed["Houston (TX)"].shopping = defaultHoustonShopping;
+    }
+    if (!parsed["Houston"]) {
+      parsed["Houston"] = { food: [], shopping: defaultHoustonShopping, misc: [] };
+    } else {
+      parsed["Houston"].shopping = defaultHoustonShopping;
     }
 
-    if (!parsed["Maui (Kahului)"]) {
-      parsed["Maui (Kahului)"] = { food: [], shopping: defaultMauiShopping, misc: defaultMauiMisc };
+    // Dallas defaults
+    if (!parsed["Dallas (TX)"]) {
+      parsed["Dallas (TX)"] = { food: [], shopping: defaultDallasShopping, misc: [] };
     } else {
-      parsed["Maui (Kahului)"].shopping = defaultMauiShopping;
-      parsed["Maui (Kahului)"].misc = defaultMauiMisc;
+      parsed["Dallas (TX)"].shopping = defaultDallasShopping;
     }
-
-    // Big Island defaults
-    if (!parsed["Big Island"]) {
-      parsed["Big Island"] = { food: [], shopping: defaultBigIslandShopping, misc: [] };
+    if (!parsed["Dallas"]) {
+      parsed["Dallas"] = { food: [], shopping: defaultDallasShopping, misc: [] };
     } else {
-      parsed["Big Island"].shopping = defaultBigIslandShopping;
-    }
-
-    if (!parsed["Big Island (Kona)"]) {
-      parsed["Big Island (Kona)"] = { food: [], shopping: defaultBigIslandShopping, misc: [] };
-    } else {
-      parsed["Big Island (Kona)"].shopping = defaultBigIslandShopping;
+      parsed["Dallas"].shopping = defaultDallasShopping;
     }
 
     return parsed;
@@ -199,11 +170,11 @@ export default function App() {
   const [inputState, setInputState] = useState({});
 
   useEffect(() => {
-    localStorage.setItem('usa2027_reminders', JSON.stringify(reminders));
+    localStorage.setItem('pensacola2028_reminders', JSON.stringify(reminders));
   }, [reminders]);
 
   useEffect(() => {
-    localStorage.setItem('usa2027_region_reminders', JSON.stringify(regionReminders));
+    localStorage.setItem('pensacola2028_region_reminders', JSON.stringify(regionReminders));
   }, [regionReminders]);
 
   const regions = ['Alle', ...new Set(initialItinerary.map(item => item.region))];
@@ -216,7 +187,6 @@ export default function App() {
     setExpandedDay(expandedDay === id ? null : id);
   };
 
-  // Daily Notes Handlers
   const handleAddNote = (dayId, category) => {
     const text = inputState[`${dayId}-${category}`];
     if (!text || !text.trim()) return;
@@ -250,7 +220,6 @@ export default function App() {
     });
   };
 
-  // Region/Destination Notes Handlers
   const handleAddRegionNote = (regionName, category) => {
     const text = inputState[`reg-${regionName}-${category}`];
     if (!text || !text.trim()) return;
@@ -288,15 +257,14 @@ export default function App() {
   const totalRegionNotes = (currentRegionNotes.food?.length || 0) + (currentRegionNotes.shopping?.length || 0) + (currentRegionNotes.misc?.length || 0);
 
   const activeVisual = regionVisuals[selectedRegion] || regionVisuals['Alle'];
-
-  const isSelectedHawaii = initialItinerary.find(i => i.region === selectedRegion)?.isHawaii;
+  const isSelectedFlorida = initialItinerary.find(i => i.region === selectedRegion)?.isFlorida || selectedRegion === 'Pensacola';
   const currentWaterTemp = regionCoords[selectedRegion]?.waterTemp;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-3 sm:p-6 font-sans relative overflow-x-hidden">
       {/* Background Glow Accents */}
-      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-teal-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Banner */}
       <header className="max-w-4xl mx-auto mb-6 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative bg-slate-900/60 backdrop-blur-xl">
@@ -309,13 +277,13 @@ export default function App() {
           <div className="absolute top-4 right-4 flex gap-2">
             <button 
               onClick={() => setActiveTab('plan')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all ${activeTab === 'plan' ? 'bg-blue-600/90 text-white shadow-lg border border-blue-400/40' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800/80 border border-white/10'}`}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all ${activeTab === 'plan' ? 'bg-teal-600/90 text-white shadow-lg border border-teal-400/40' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800/80 border border-white/10'}`}
             >
               Reiseplan
             </button>
             <button 
               onClick={() => setActiveTab('overview')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all ${activeTab === 'overview' ? 'bg-blue-600/90 text-white shadow-lg border border-blue-400/40' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800/80 border border-white/10'}`}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all ${activeTab === 'overview' ? 'bg-teal-600/90 text-white shadow-lg border border-teal-400/40' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800/80 border border-white/10'}`}
             >
               Übersicht
             </button>
@@ -323,11 +291,11 @@ export default function App() {
 
           <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
             <div>
-              <span className="text-[10px] font-bold tracking-widest text-amber-400 uppercase bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20 backdrop-blur-md">
-                13. Mai – 04. Juni 2027
+              <span className="text-[10px] font-bold tracking-widest text-teal-300 uppercase bg-teal-400/10 px-2.5 py-1 rounded-full border border-teal-400/20 backdrop-blur-md">
+                20. Mai – 09. Juni 2028
               </span>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 drop-shadow-md">
-                USA & Hawaii 2027
+                Pensacola & Südstaaten 2028
               </h1>
             </div>
 
@@ -373,56 +341,56 @@ export default function App() {
         <main className="max-w-4xl mx-auto space-y-5">
           {/* Region Filter Bar (Glassmorphism) */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none bg-slate-900/40 p-2 rounded-2xl border border-white/5 backdrop-blur-md">
-            <Compass className="w-4 h-4 text-blue-400 ml-2 flex-shrink-0" />
+            <Compass className="w-4 h-4 text-teal-400 ml-2 flex-shrink-0" />
             {regions.map(r => {
-              const isHaw = initialItinerary.find(i => i.region === r)?.isHawaii;
+              const isFl = r === 'Pensacola' || r.includes('Florida');
               return (
                 <button
                   key={r}
                   onClick={() => setSelectedRegion(r)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     selectedRegion === r 
-                      ? (isHaw 
+                      ? (isFl 
                           ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg border border-teal-400/40' 
-                          : 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg border border-orange-400/40')
+                          : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg border border-orange-400/40')
                       : 'bg-slate-800/40 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 border border-white/5'
                   }`}
                 >
-                  {isHaw && <Palmtree className="w-3 h-3 text-teal-300" />}
-                  {!isHaw && r !== 'Alle' && r !== 'Flug' && r !== 'Frankfurt (Ankunft)' && <Sun className="w-3 h-3 text-amber-400" />}
+                  {isFl && <Palmtree className="w-3 h-3 text-teal-300" />}
+                  {!isFl && r !== 'Alle' && <Sun className="w-3 h-3 text-amber-400" />}
                   {r}
                 </button>
               );
             })}
           </div>
 
-          {/* Region Overview Card (Glassmorphism) */}
+          {/* Region Overview Card */}
           <div className={`rounded-2xl border shadow-xl overflow-hidden backdrop-blur-xl transition-all ${
-            isSelectedHawaii 
+            isSelectedFlorida 
               ? 'bg-gradient-to-b from-teal-950/40 to-slate-900/60 border-teal-500/30' 
-              : 'bg-gradient-to-b from-orange-950/30 to-slate-900/60 border-orange-500/20'
+              : 'bg-gradient-to-b from-amber-950/30 to-slate-900/60 border-amber-500/20'
           }`}>
             <button 
               onClick={() => setIsRegionNotesExpanded(!isRegionNotesExpanded)}
               className={`w-full p-4 flex items-center justify-between text-left transition-all ${
-                isSelectedHawaii ? 'bg-teal-900/20 hover:bg-teal-900/30' : 'bg-orange-900/20 hover:bg-orange-900/30'
+                isSelectedFlorida ? 'bg-teal-900/20 hover:bg-teal-900/30' : 'bg-amber-900/20 hover:bg-amber-900/30'
               }`}
             >
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-xl border ${
-                  isSelectedHawaii ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' : 'bg-orange-500/20 text-orange-300 border-orange-500/30'
+                  isSelectedFlorida ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
                 }`}>
                   <Bookmark className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-100 text-sm flex items-center gap-2">
                     Allgemeine Notizen für: 
-                    <span className={isSelectedHawaii ? 'text-teal-300 font-extrabold' : 'text-amber-400 font-extrabold'}>
+                    <span className={isSelectedFlorida ? 'text-teal-300 font-extrabold' : 'text-amber-400 font-extrabold'}>
                       {selectedRegion}
                     </span>
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    {isSelectedHawaii ? '🏝️ Hawaii-Insel Tipps' : '🏜️ Festland / USA Tipps'} ({totalRegionNotes} Einträge)
+                    {isSelectedFlorida ? '🌴 Florida & Strand Tipps' : '🤠 Südstaaten & Outlet Tipps'} ({totalRegionNotes} Einträge)
                   </p>
                 </div>
               </div>
@@ -460,7 +428,7 @@ export default function App() {
                 {/* Shopping Category */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-pink-400">
-                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Supermärkte auf {selectedRegion}
+                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Malls für {selectedRegion}
                   </div>
                   <ul className="space-y-1.5">
                     {currentRegionNotes.shopping?.map((note, i) => (
@@ -518,13 +486,14 @@ export default function App() {
               const dayNotes = reminders[item.id] || { food: [], shopping: [], misc: [] };
               const isExpanded = expandedDay === item.id;
               const totalNotes = (dayNotes.food?.length || 0) + (dayNotes.shopping?.length || 0) + (dayNotes.misc?.length || 0);
+              const isDayFlorida = item.isFlorida || item.region === 'Pensacola';
 
               return (
                 <div key={item.id} className="bg-slate-900/50 rounded-2xl border border-white/10 shadow-lg overflow-hidden backdrop-blur-md transition-all hover:border-white/20">
                   <div className="p-4 sm:p-5">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
                           <Calendar className="w-4 h-4" />
                         </div>
                         <h2 className="font-bold text-slate-100 text-base">{item.date}</h2>
@@ -534,22 +503,22 @@ export default function App() {
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md ${
                         item.isFlight 
                           ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
-                          : (item.isHawaii 
+                          : (isDayFlorida 
                               ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' 
                               : 'bg-orange-500/20 text-orange-300 border border-orange-500/30')
                       }`}>
-                        {item.isFlight ? <Plane className="w-3 h-3" /> : (item.isHawaii ? <Palmtree className="w-3 h-3" /> : <MapPin className="w-3 h-3" />)}
+                        {item.isFlight ? <Plane className="w-3 h-3" /> : (isDayFlorida ? <Palmtree className="w-3 h-3" /> : <Car className="w-3 h-3" />)}
                         {item.region}
                       </span>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-3 text-xs mb-3">
                       <div className="bg-slate-950/60 p-3.5 rounded-xl border border-white/5">
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Vormittag</span>
+                        <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider block mb-1">Vormittag</span>
                         <p className="text-slate-300 font-medium leading-relaxed">{item.morning}</p>
                       </div>
                       <div className="bg-slate-950/60 p-3.5 rounded-xl border border-white/5">
-                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Nachmittag / Abend</span>
+                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Nachmittag / Abend</span>
                         <p className="text-slate-300 font-medium leading-relaxed">{item.evening}</p>
                       </div>
                     </div>
@@ -561,7 +530,7 @@ export default function App() {
                       <span className="flex items-center gap-2">
                         <span>Tages-Reminder & Notizen</span>
                         {totalNotes > 0 && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold">
                             {totalNotes}
                           </span>
                         )}
@@ -588,8 +557,8 @@ export default function App() {
                         <div className="flex gap-2">
                           <input 
                             type="text" 
-                            placeholder="z. B. Restaurant, Foodtruck..."
-                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-200 placeholder:text-slate-500"
+                            placeholder="z. B. Restaurant, Diner..."
+                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 text-slate-200 placeholder:text-slate-500"
                             value={inputState[`${item.id}-food`] || ''}
                             onChange={e => setInputState({ ...inputState, [`${item.id}-food`]: e.target.value })}
                             onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'food')}
@@ -614,8 +583,8 @@ export default function App() {
                         <div className="flex gap-2">
                           <input 
                             type="text" 
-                            placeholder="z. B. Mall, Souvenirs..."
-                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-200 placeholder:text-slate-500"
+                            placeholder="z. B. Outlet, Mall..."
+                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 text-slate-200 placeholder:text-slate-500"
                             value={inputState[`${item.id}-shopping`] || ''}
                             onChange={e => setInputState({ ...inputState, [`${item.id}-shopping`]: e.target.value })}
                             onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'shopping')}
@@ -641,7 +610,7 @@ export default function App() {
                           <input 
                             type="text" 
                             placeholder="z. B. Notizen, Tickets..."
-                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-200 placeholder:text-slate-500"
+                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-teal-500 text-slate-200 placeholder:text-slate-500"
                             value={inputState[`${item.id}-misc`] || ''}
                             onChange={e => setInputState({ ...inputState, [`${item.id}-misc`]: e.target.value })}
                             onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'misc')}
@@ -660,19 +629,19 @@ export default function App() {
 
       {activeTab === 'overview' && (
         <main className="max-w-4xl mx-auto bg-slate-900/60 p-6 rounded-2xl border border-white/10 shadow-xl backdrop-blur-xl">
-          <h2 className="text-xl font-bold mb-4 text-blue-400">Reiseübersicht & Key-Facts</h2>
+          <h2 className="text-xl font-bold mb-4 text-teal-400">Reiseübersicht & Key-Facts</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
               <h3 className="text-xs font-semibold text-emerald-400 mb-1 uppercase tracking-wider">Gesamtdauer</h3>
-              <p className="text-2xl font-black text-slate-100">23 Tage</p>
+              <p className="text-2xl font-black text-slate-100">21 Tage</p>
             </div>
             <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
               <h3 className="text-xs font-semibold text-amber-400 mb-1 uppercase tracking-wider">Stationen</h3>
-              <p className="text-2xl font-black text-slate-100">6 Ziele</p>
+              <p className="text-2xl font-black text-slate-100">5 Hauptziele</p>
             </div>
             <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
-              <h3 className="text-xs font-semibold text-indigo-400 mb-1 uppercase tracking-wider">Flüge</h3>
-              <p className="text-2xl font-black text-slate-100">6 Flugsegmente</p>
+              <h3 className="text-xs font-semibold text-indigo-400 mb-1 uppercase tracking-wider">Shopping-Hotspots</h3>
+              <p className="text-2xl font-black text-slate-100">13 Malls & Outlets</p>
             </div>
           </div>
         </main>
