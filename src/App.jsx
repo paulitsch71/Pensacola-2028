@@ -75,6 +75,25 @@ const defaultOahuFood = [
   "Chick-fil-A (Mo–Sa 06:30 – 22:00 Uhr | So geschl.)"
 ];
 
+const defaultMauiShopping = [
+  "3x Ross Dress for Less (Täglich 08:00 – 22:30 Uhr)",
+  "⚠️ Achtung: Kein Marshalls auf Maui!",
+  "T.J. Maxx - Kahului (Mo–Sa 09:30 – 21:30 | So 10:00 – 20:00 Uhr)",
+  "Walmart (Täglich 06:00 – 23:00 Uhr)",
+  "Target (Täglich 07:00 – 22:00 Uhr)",
+  "Maui Mall Village (Täglich 07:00 – 21:00 Uhr)",
+  "Queen Ka'ahumanu Center (Täglich 10:00 – 20:00 Uhr)",
+  "The Shops at Wailea - incl. Louis Vuitton (Täglich 10:00 – 21:00 Uhr)",
+  "Whalers Village - incl. Louis Vuitton (Täglich 09:00 – 21:00 Uhr)"
+];
+
+const defaultBigIslandShopping = [
+  "KTA Super Stores (Täglich 06:00 – 21:00/22:00 Uhr)",
+  "Safeway - Kona/Hilo (24 Std. geöffnet)",
+  "Foodland (Täglich 06:00 – 21:00 Uhr)",
+  "Island Naturals Market & Deli (Täglich 08:00 – 19:00 Uhr)"
+];
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('plan');
   const [selectedRegion, setSelectedRegion] = useState('Alle');
@@ -134,13 +153,39 @@ export default function App() {
     const saved = localStorage.getItem('usa2027_region_reminders');
     const parsed = saved ? JSON.parse(saved) : {};
 
-    // Initial default food tips for Oahu with opening hours
+    // Oahu defaults
     if (!parsed["Oahu (Honolulu)"]) {
       parsed["Oahu (Honolulu)"] = { food: defaultOahuFood, shopping: [], misc: [] };
     } else {
-      // Refresh food list to include Black Angus & hours
       parsed["Oahu (Honolulu)"].food = defaultOahuFood;
     }
+
+    // Maui defaults
+    if (!parsed["Maui"]) {
+      parsed["Maui"] = { food: [], shopping: defaultMauiShopping, misc: [] };
+    } else {
+      parsed["Maui"].shopping = defaultMauiShopping;
+    }
+
+    if (!parsed["Maui (Kahului)"]) {
+      parsed["Maui (Kahului)"] = { food: [], shopping: defaultMauiShopping, misc: [] };
+    } else {
+      parsed["Maui (Kahului)"].shopping = defaultMauiShopping;
+    }
+
+    // Big Island defaults
+    if (!parsed["Big Island"]) {
+      parsed["Big Island"] = { food: [], shopping: defaultBigIslandShopping, misc: [] };
+    } else {
+      parsed["Big Island"].shopping = defaultBigIslandShopping;
+    }
+
+    if (!parsed["Big Island (Kona)"]) {
+      parsed["Big Island (Kona)"] = { food: [], shopping: defaultBigIslandShopping, misc: [] };
+    } else {
+      parsed["Big Island (Kona)"].shopping = defaultBigIslandShopping;
+    }
+
     return parsed;
   });
 
@@ -408,7 +453,7 @@ export default function App() {
                 {/* Shopping Category */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-pink-400">
-                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Outlets auf {selectedRegion}
+                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Supermärkte auf {selectedRegion}
                   </div>
                   <ul className="space-y-1.5">
                     {currentRegionNotes.shopping?.map((note, i) => (
