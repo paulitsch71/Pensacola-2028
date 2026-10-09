@@ -63,15 +63,16 @@ const regionVisuals = {
 };
 
 const defaultOahuFood = [
-  "Raising Cane’s Chicken Fingers",
-  "Jack in the Box",
-  "Kahuku Food Trucks (North Shore)",
-  "Sabrozon Mexican Food Truck",
-  "Domino’s Pizza",
-  "Taco Bell",
-  "Jersey Mike’s Subs",
-  "Popeyes Louisiana Kitchen",
-  "Chick-fil-A"
+  "Black Angus Steakhouse - Pearl City (So–Do 11:15 – 20:45 | Fr–Sa 11:15 – 21:45 Uhr)",
+  "Raising Cane’s Chicken Fingers (Täglich 10:00 – 23:00 Uhr)",
+  "Jack in the Box (24 Std. geöffnet / Drive-Thru)",
+  "Kahuku Food Trucks - North Shore (Täglich ca. 10:00 – 18:00 Uhr)",
+  "Sabrozon Mexican Food Truck (Täglich 11:15 – 19:45 Uhr)",
+  "Domino’s Pizza (Täglich 10:00 – 00:00/01:00 Uhr)",
+  "Taco Bell (Täglich 07:00 – 01:00 Uhr)",
+  "Jersey Mike’s Subs (Täglich 10:00 – 21:00 Uhr)",
+  "Popeyes Louisiana Kitchen (Täglich 10:00 – 22:00 Uhr)",
+  "Chick-fil-A (Mo–Sa 06:30 – 22:00 Uhr | So geschl.)"
 ];
 
 export default function App() {
@@ -133,10 +134,11 @@ export default function App() {
     const saved = localStorage.getItem('usa2027_region_reminders');
     const parsed = saved ? JSON.parse(saved) : {};
 
-    // Initial default food tips for Oahu if none exist yet
+    // Initial default food tips for Oahu with opening hours
     if (!parsed["Oahu (Honolulu)"]) {
       parsed["Oahu (Honolulu)"] = { food: defaultOahuFood, shopping: [], misc: [] };
-    } else if (!parsed["Oahu (Honolulu)"].food || parsed["Oahu (Honolulu)"].food.length === 0) {
+    } else {
+      // Refresh food list to include Black Angus & hours
       parsed["Oahu (Honolulu)"].food = defaultOahuFood;
     }
     return parsed;
