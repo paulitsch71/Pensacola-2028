@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, MapPin, Plane, Utensils, ShoppingBag, 
-  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark
+  FileText, Plus, Trash2, ChevronDown, ChevronUp, Bookmark, Clock, Compass
 } from 'lucide-react';
 
 const initialItinerary = [
@@ -29,11 +29,49 @@ const initialItinerary = [
   { id: 22, date: "Do, 03.06.2027", region: "Frankfurt (Ankunft)", morning: "Ankunft am Flughafen Frankfurt (FRA)", evening: "Heimreise" }
 ];
 
+const regionVisuals = {
+  'Alle': { title: "Gesamte USA & Hawaii Reise", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" },
+  'Oahu (Honolulu)': { title: "Oahu – Waikiki & Pearl Harbor", bg: "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80" },
+  'Maui (Kahului)': { title: "Maui – Road to Hana & Strände", bg: "https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=1200&q=80" },
+  'Maui': { title: "Maui – Natur & Sonnenuntergänge", bg: "https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=1200&q=80" },
+  'Big Island (Kona)': { title: "Big Island – Vulkanlandschaften & Kona", bg: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" },
+  'Big Island': { title: "Big Island – Abenteuer & Küste", bg: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" },
+  'Phoenix (Arizona)': { title: "Phoenix – Wüstenzauber & Canyons", bg: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80" },
+  'Phoenix': { title: "Phoenix & Umgebung", bg: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80" },
+  'Rancho Cucamonga (CA)': { title: "Rancho Cucamonga – Sonne in Kalifornien", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
+  'Rancho Cucamonga': { title: "Rancho Cucamonga", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
+  'Los Angeles': { title: "Los Angeles – Hollywood & Pacific Coast", bg: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1200&q=80" },
+  'Flug': { title: "Flug & Weiterreise", bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" },
+  'Frankfurt (Ankunft)': { title: "Ankunft in Deutschland", bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" }
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('plan');
   const [selectedRegion, setSelectedRegion] = useState('Alle');
   const [expandedDay, setExpandedDay] = useState(null);
   const [isRegionNotesExpanded, setIsRegionNotesExpanded] = useState(true);
+
+  // Countdown State
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date('2027-05-13T06:00:00');
+    const updateCountdown = () => {
+      const now = new Date();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / 1000 / 60) % 60);
+        setTimeLeft({ days, hours, minutes });
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // LocalStorage state for daily notes
   const [reminders, setReminders] = useState(() => {
@@ -138,103 +176,135 @@ export default function App() {
   const currentRegionNotes = regionReminders[selectedRegion] || { food: [], shopping: [], misc: [] };
   const totalRegionNotes = (currentRegionNotes.food?.length || 0) + (currentRegionNotes.shopping?.length || 0) + (currentRegionNotes.misc?.length || 0);
 
+  const activeVisual = regionVisuals[selectedRegion] || regionVisuals['Alle'];
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-8 font-sans">
-      <header className="max-w-4xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-lg">
-        <div>
-          <h1 className="text-2xl font-bold text-blue-400 flex items-center gap-2">
-            <Plane className="w-6 h-6 text-indigo-400" /> USA & Hawaii 2027
-          </h1>
-          <p className="text-xs text-slate-400">13. Mai 2027 – 03. Juni 2027</p>
-        </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={() => setActiveTab('plan')}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${activeTab === 'plan' ? 'bg-blue-600 text-white shadow' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
-          >
-            Reiseplan
-          </button>
-          <button 
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${activeTab === 'overview' ? 'bg-blue-600 text-white shadow' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
-          >
-            Übersicht
-          </button>
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-3 sm:p-6 font-sans relative overflow-x-hidden">
+      {/* Background Glow Accents */}
+      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Banner */}
+      <header className="max-w-4xl mx-auto mb-6 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative bg-slate-900/60 backdrop-blur-xl">
+        <div 
+          className="h-44 sm:h-52 bg-cover bg-center relative transition-all duration-700"
+          style={{ backgroundImage: `url(${activeVisual.bg})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
+          
+          <div className="absolute top-4 right-4 flex gap-2">
+            <button 
+              onClick={() => setActiveTab('plan')}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all ${activeTab === 'plan' ? 'bg-blue-600/90 text-white shadow-lg border border-blue-400/40' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800/80 border border-white/10'}`}
+            >
+              Reiseplan
+            </button>
+            <button 
+              onClick={() => setActiveTab('overview')}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all ${activeTab === 'overview' ? 'bg-blue-600/90 text-white shadow-lg border border-blue-400/40' : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800/80 border border-white/10'}`}
+            >
+              Übersicht
+            </button>
+          </div>
+
+          <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
+            <div>
+              <span className="text-[10px] font-bold tracking-widest text-amber-400 uppercase bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20 backdrop-blur-md">
+                13. Mai – 03. Juni 2027
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 drop-shadow-md">
+                USA & Hawaii 2027
+              </h1>
+            </div>
+
+            {/* Countdown Badge */}
+            <div className="bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 flex items-center gap-2.5 shadow-lg">
+              <Clock className="w-4 h-4 text-amber-400 animate-pulse" />
+              <div className="text-right">
+                <p className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Countdown</p>
+                <p className="text-xs font-bold text-amber-300">
+                  {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m bis Abflug
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
       {activeTab === 'plan' && (
-        <main className="max-w-4xl mx-auto space-y-4">
-          {/* Region Selector */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider mr-1">Region:</span>
+        <main className="max-w-4xl mx-auto space-y-5">
+          {/* Region Filter Bar (Glassmorphism) */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none bg-slate-900/40 p-2 rounded-2xl border border-white/5 backdrop-blur-md">
+            <Compass className="w-4 h-4 text-blue-400 ml-2 flex-shrink-0" />
             {regions.map(r => (
               <button
                 key={r}
                 onClick={() => setSelectedRegion(r)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${selectedRegion === r ? 'bg-indigo-600 text-white shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${selectedRegion === r ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border border-blue-400/30' : 'bg-slate-800/40 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 border border-white/5'}`}
               >
                 {r}
               </button>
             ))}
           </div>
 
-          {/* Overall Destination / Region Notes Card */}
-          <div className="bg-indigo-950/40 rounded-xl border border-indigo-500/30 shadow-md overflow-hidden">
+          {/* Region Overview Card (Glassmorphism) */}
+          <div className="bg-gradient-to-b from-indigo-950/40 to-slate-900/60 rounded-2xl border border-indigo-500/20 shadow-xl overflow-hidden backdrop-blur-xl">
             <button 
               onClick={() => setIsRegionNotesExpanded(!isRegionNotesExpanded)}
-              className="w-full p-4 flex items-center justify-between text-left bg-indigo-900/30 hover:bg-indigo-900/50 transition-all"
+              className="w-full p-4 flex items-center justify-between text-left bg-indigo-900/20 hover:bg-indigo-900/30 transition-all"
             >
-              <div className="flex items-center gap-2">
-                <Bookmark className="w-5 h-5 text-indigo-400" />
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                  <Bookmark className="w-5 h-5" />
+                </div>
                 <div>
-                  <h3 className="font-bold text-indigo-200 text-sm">
-                    Allgemeine Notizen & Tipps für: <span className="text-amber-300 underline underline-offset-4 decoration-amber-400/50">{selectedRegion}</span>
+                  <h3 className="font-bold text-indigo-100 text-sm">
+                    Allgemeine Notizen für: <span className="text-amber-300">{selectedRegion}</span>
                   </h3>
-                  <p className="text-xs text-indigo-300/70">Insel- & ortsübergreifende Vorschläge ({totalRegionNotes} Notizen)</p>
+                  <p className="text-[11px] text-indigo-300/70">Insel- & zielortübergreifende Tipps ({totalRegionNotes} Einträge)</p>
                 </div>
               </div>
               {isRegionNotesExpanded ? <ChevronUp className="w-5 h-5 text-indigo-300" /> : <ChevronDown className="w-5 h-5 text-indigo-300" />}
             </button>
 
             {isRegionNotesExpanded && (
-              <div className="p-4 bg-slate-900/90 border-t border-indigo-500/20 space-y-4">
+              <div className="p-4 bg-slate-950/80 border-t border-indigo-500/10 space-y-4">
                 {/* Food Category */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
-                    <Utensils className="w-3.5 h-3.5" /> Essensvorschläge & Restaurants für {selectedRegion}
+                    <Utensils className="w-3.5 h-3.5" /> Gastro & Restaurant-Tipps für {selectedRegion}
                   </div>
-                  <ul className="space-y-1">
+                  <ul className="space-y-1.5">
                     {currentRegionNotes.food?.map((note, i) => (
-                      <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
-                        <span>{note}</span>
-                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'food', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                      <li key={i} className="flex justify-between items-center text-xs bg-slate-900/90 p-2.5 rounded-xl border border-white/5">
+                        <span className="text-slate-200">{note}</span>
+                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'food', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </li>
                     ))}
                   </ul>
                   <div className="flex gap-2">
                     <input 
                       type="text" 
-                      placeholder={`Allgemeiner Lokaltipp für ${selectedRegion}...`}
-                      className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 text-slate-200"
+                      placeholder={`Neuer Restaurant-Tipp für ${selectedRegion}...`}
+                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 placeholder:text-slate-500"
                       value={inputState[`reg-${selectedRegion}-food`] || ''}
                       onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-food`]: e.target.value })}
                       onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'food')}
                     />
-                    <button onClick={() => handleAddRegionNote(selectedRegion, 'food')} className="bg-emerald-600 hover:bg-emerald-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                    <button onClick={() => handleAddRegionNote(selectedRegion, 'food')} className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl transition-all shadow-md"><Plus className="w-4 h-4" /></button>
                   </div>
                 </div>
 
                 {/* Shopping Category */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-pink-400">
-                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Malls auf {selectedRegion}
+                    <ShoppingBag className="w-3.5 h-3.5" /> Shopping & Outlets auf {selectedRegion}
                   </div>
-                  <ul className="space-y-1">
+                  <ul className="space-y-1.5">
                     {currentRegionNotes.shopping?.map((note, i) => (
-                      <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
-                        <span>{note}</span>
-                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'shopping', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                      <li key={i} className="flex justify-between items-center text-xs bg-slate-900/90 p-2.5 rounded-xl border border-white/5">
+                        <span className="text-slate-200">{note}</span>
+                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'shopping', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </li>
                     ))}
                   </ul>
@@ -242,12 +312,12 @@ export default function App() {
                     <input 
                       type="text" 
                       placeholder={`Shopping-Tipp für ${selectedRegion}...`}
-                      className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 text-slate-200"
+                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 placeholder:text-slate-500"
                       value={inputState[`reg-${selectedRegion}-shopping`] || ''}
                       onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-shopping`]: e.target.value })}
                       onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'shopping')}
                     />
-                    <button onClick={() => handleAddRegionNote(selectedRegion, 'shopping')} className="bg-pink-600 hover:bg-pink-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                    <button onClick={() => handleAddRegionNote(selectedRegion, 'shopping')} className="bg-pink-600 hover:bg-pink-500 text-white p-2 rounded-xl transition-all shadow-md"><Plus className="w-4 h-4" /></button>
                   </div>
                 </div>
 
@@ -256,31 +326,31 @@ export default function App() {
                   <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
                     <FileText className="w-3.5 h-3.5" /> Sonstiges & Highlights für {selectedRegion}
                   </div>
-                  <ul className="space-y-1">
+                  <ul className="space-y-1.5">
                     {currentRegionNotes.misc?.map((note, i) => (
-                      <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
-                        <span>{note}</span>
-                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'misc', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                      <li key={i} className="flex justify-between items-center text-xs bg-slate-900/90 p-2.5 rounded-xl border border-white/5">
+                        <span className="text-slate-200">{note}</span>
+                        <button onClick={() => handleDeleteRegionNote(selectedRegion, 'misc', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </li>
                     ))}
                   </ul>
                   <div className="flex gap-2">
                     <input 
                       type="text" 
-                      placeholder={`Allgemeines Highlight/Reminder für ${selectedRegion}...`}
-                      className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 text-slate-200"
+                      placeholder={`Reminder/Highlight für ${selectedRegion}...`}
+                      className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 text-slate-200 placeholder:text-slate-500"
                       value={inputState[`reg-${selectedRegion}-misc`] || ''}
                       onChange={e => setInputState({ ...inputState, [`reg-${selectedRegion}-misc`]: e.target.value })}
                       onKeyDown={e => e.key === 'Enter' && handleAddRegionNote(selectedRegion, 'misc')}
                     />
-                    <button onClick={() => handleAddRegionNote(selectedRegion, 'misc')} className="bg-sky-600 hover:bg-sky-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                    <button onClick={() => handleAddRegionNote(selectedRegion, 'misc')} className="bg-sky-600 hover:bg-sky-500 text-white p-2 rounded-xl transition-all shadow-md"><Plus className="w-4 h-4" /></button>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Daily Itinerary Cards */}
+          {/* Daily Cards */}
           <div className="space-y-4">
             {filteredItinerary.map((item) => {
               const dayNotes = reminders[item.id] || { food: [], shopping: [], misc: [] };
@@ -288,66 +358,73 @@ export default function App() {
               const totalNotes = (dayNotes.food?.length || 0) + (dayNotes.shopping?.length || 0) + (dayNotes.misc?.length || 0);
 
               return (
-                <div key={item.id} className="bg-slate-800/90 rounded-xl border border-slate-700 shadow-md overflow-hidden">
-                  <div className="p-4">
+                <div key={item.id} className="bg-slate-900/50 rounded-2xl border border-white/10 shadow-lg overflow-hidden backdrop-blur-md transition-all hover:border-white/20">
+                  <div className="p-4 sm:p-5">
                     <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-blue-400" />
-                        <h2 className="font-bold text-slate-100">{item.date}</h2>
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          <Calendar className="w-4 h-4" />
+                        </div>
+                        <h2 className="font-bold text-slate-100 text-base">{item.date}</h2>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 ${item.isFlight ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md ${item.isFlight ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}`}>
                         {item.isFlight ? <Plane className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}
                         {item.region}
                       </span>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-3 text-sm mb-3">
-                      <div className="bg-slate-900/60 p-3 rounded-lg border border-slate-800">
-                        <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider block mb-1">Vormittag</span>
-                        <p className="text-slate-300">{item.morning}</p>
+                    <div className="grid md:grid-cols-2 gap-3 text-xs mb-3">
+                      <div className="bg-slate-950/60 p-3.5 rounded-xl border border-white/5">
+                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Vormittag</span>
+                        <p className="text-slate-300 font-medium leading-relaxed">{item.morning}</p>
                       </div>
-                      <div className="bg-slate-900/60 p-3 rounded-lg border border-slate-800">
-                        <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider block mb-1">Nachmittag / Abend</span>
-                        <p className="text-slate-300">{item.evening}</p>
+                      <div className="bg-slate-950/60 p-3.5 rounded-xl border border-white/5">
+                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Nachmittag / Abend</span>
+                        <p className="text-slate-300 font-medium leading-relaxed">{item.evening}</p>
                       </div>
                     </div>
 
                     <button 
                       onClick={() => toggleExpand(item.id)}
-                      className="w-full flex items-center justify-between text-xs font-medium text-slate-400 hover:text-slate-200 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80 transition-all"
+                      className="w-full flex items-center justify-between text-xs font-semibold text-slate-400 hover:text-slate-200 bg-slate-950/40 p-3 rounded-xl border border-white/5 transition-all"
                     >
                       <span className="flex items-center gap-2">
-                        <span>Tages-Reminder & Ideen {totalNotes > 0 && `(${totalNotes})`}</span>
+                        <span>Tages-Reminder & Notizen</span>
+                        {totalNotes > 0 && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">
+                            {totalNotes}
+                          </span>
+                        )}
                       </span>
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
                   </div>
 
                   {isExpanded && (
-                    <div className="bg-slate-900/90 p-4 border-t border-slate-700/60 space-y-4">
+                    <div className="bg-slate-950/90 p-4 border-t border-white/10 space-y-4">
                       {/* Daily Essen Category */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
                           <Utensils className="w-3.5 h-3.5" /> Essensvorschläge für {item.date}
                         </div>
-                        <ul className="space-y-1">
+                        <ul className="space-y-1.5">
                           {dayNotes.food?.map((note, i) => (
-                            <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
-                              <span>{note}</span>
-                              <button onClick={() => handleDeleteNote(item.id, 'food', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                            <li key={i} className="flex justify-between items-center text-xs bg-slate-900/90 p-2.5 rounded-xl border border-white/5">
+                              <span className="text-slate-200">{note}</span>
+                              <button onClick={() => handleDeleteNote(item.id, 'food', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                             </li>
                           ))}
                         </ul>
                         <div className="flex gap-2">
                           <input 
                             type="text" 
-                            placeholder="z. B. Poke Bowl bei Foodtruck X..."
-                            className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500 text-slate-200"
+                            placeholder="z. B. Restaurant, Foodtruck..."
+                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-200 placeholder:text-slate-500"
                             value={inputState[`${item.id}-food`] || ''}
                             onChange={e => setInputState({ ...inputState, [`${item.id}-food`]: e.target.value })}
                             onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'food')}
                           />
-                          <button onClick={() => handleAddNote(item.id, 'food')} className="bg-emerald-600 hover:bg-emerald-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                          <button onClick={() => handleAddNote(item.id, 'food')} className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl transition-all shadow-md"><Plus className="w-4 h-4" /></button>
                         </div>
                       </div>
 
@@ -356,24 +433,24 @@ export default function App() {
                         <div className="flex items-center gap-2 text-xs font-bold text-pink-400">
                           <ShoppingBag className="w-3.5 h-3.5" /> Shopping für {item.date}
                         </div>
-                        <ul className="space-y-1">
+                        <ul className="space-y-1.5">
                           {dayNotes.shopping?.map((note, i) => (
-                            <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
-                              <span>{note}</span>
-                              <button onClick={() => handleDeleteNote(item.id, 'shopping', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                            <li key={i} className="flex justify-between items-center text-xs bg-slate-900/90 p-2.5 rounded-xl border border-white/5">
+                              <span className="text-slate-200">{note}</span>
+                              <button onClick={() => handleDeleteNote(item.id, 'shopping', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                             </li>
                           ))}
                         </ul>
                         <div className="flex gap-2">
                           <input 
                             type="text" 
-                            placeholder="z. B. Ala Moana Center, Souvenirs..."
-                            className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500 text-slate-200"
+                            placeholder="z. B. Mall, Souvenirs..."
+                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-200 placeholder:text-slate-500"
                             value={inputState[`${item.id}-shopping`] || ''}
                             onChange={e => setInputState({ ...inputState, [`${item.id}-shopping`]: e.target.value })}
                             onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'shopping')}
                           />
-                          <button onClick={() => handleAddNote(item.id, 'shopping')} className="bg-pink-600 hover:bg-pink-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                          <button onClick={() => handleAddNote(item.id, 'shopping')} className="bg-pink-600 hover:bg-pink-500 text-white p-2 rounded-xl transition-all shadow-md"><Plus className="w-4 h-4" /></button>
                         </div>
                       </div>
 
@@ -382,24 +459,24 @@ export default function App() {
                         <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
                           <FileText className="w-3.5 h-3.5" /> Sonstiges für {item.date}
                         </div>
-                        <ul className="space-y-1">
+                        <ul className="space-y-1.5">
                           {dayNotes.misc?.map((note, i) => (
-                            <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
-                              <span>{note}</span>
-                              <button onClick={() => handleDeleteNote(item.id, 'misc', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                            <li key={i} className="flex justify-between items-center text-xs bg-slate-900/90 p-2.5 rounded-xl border border-white/5">
+                              <span className="text-slate-200">{note}</span>
+                              <button onClick={() => handleDeleteNote(item.id, 'misc', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                             </li>
                           ))}
                         </ul>
                         <div className="flex gap-2">
                           <input 
                             type="text" 
-                            placeholder="z. B. Tickets ausdrucken, Sonnencreme..."
-                            className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500 text-slate-200"
+                            placeholder="z. B. Notizen, Tickets..."
+                            className="flex-1 text-xs bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-200 placeholder:text-slate-500"
                             value={inputState[`${item.id}-misc`] || ''}
                             onChange={e => setInputState({ ...inputState, [`${item.id}-misc`]: e.target.value })}
                             onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'misc')}
                           />
-                          <button onClick={() => handleAddNote(item.id, 'misc')} className="bg-sky-600 hover:bg-sky-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                          <button onClick={() => handleAddNote(item.id, 'misc')} className="bg-sky-600 hover:bg-sky-500 text-white p-2 rounded-xl transition-all shadow-md"><Plus className="w-4 h-4" /></button>
                         </div>
                       </div>
                     </div>
@@ -412,20 +489,20 @@ export default function App() {
       )}
 
       {activeTab === 'overview' && (
-        <main className="max-w-4xl mx-auto bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-md">
-          <h2 className="text-xl font-bold mb-4 text-blue-400">Reiseübersicht</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-              <h3 className="text-sm font-semibold text-emerald-400 mb-1">Gesamtdauer</h3>
-              <p className="text-xl font-bold text-slate-100">22 Tage</p>
+        <main className="max-w-4xl mx-auto bg-slate-900/60 p-6 rounded-2xl border border-white/10 shadow-xl backdrop-blur-xl">
+          <h2 className="text-xl font-bold mb-4 text-blue-400">Reiseübersicht & Key-Facts</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
+              <h3 className="text-xs font-semibold text-emerald-400 mb-1 uppercase tracking-wider">Gesamtdauer</h3>
+              <p className="text-2xl font-black text-slate-100">22 Tage</p>
             </div>
-            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-              <h3 className="text-sm font-semibold text-amber-400 mb-1">Stopps & Inseln</h3>
-              <p className="text-xl font-bold text-slate-100">6 Stationen</p>
+            <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
+              <h3 className="text-xs font-semibold text-amber-400 mb-1 uppercase tracking-wider">Stationen</h3>
+              <p className="text-2xl font-black text-slate-100">6 Ziele</p>
             </div>
-            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-              <h3 className="text-sm font-semibold text-indigo-400 mb-1">Flüge</h3>
-              <p className="text-xl font-bold text-slate-100">5 Flugtage</p>
+            <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/5">
+              <h3 className="text-xs font-semibold text-indigo-400 mb-1 uppercase tracking-wider">Flüge</h3>
+              <p className="text-2xl font-black text-slate-100">5 Flugtage</p>
             </div>
           </div>
         </main>
