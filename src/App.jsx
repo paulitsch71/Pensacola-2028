@@ -16,7 +16,7 @@ const initialItinerary = [
   { id: 9, date: "Fr, 21.05.2027", region: "Big Island (Kona)", isFlight: true, isHawaii: true, morning: "Inselwechsel: Flug von Kahului (OGG) nach Kona (KOA), Big Island", evening: "Ankunft, Mietwagen & Hotel-Check-in in Kona" },
   { id: 10, date: "Sa, 22.05.2027", region: "Big Island", isHawaii: true, morning: "Erkundung der Vulkaninsel (z. B. Kona Coast / Hawaii Volcanoes NP)", evening: "Abend in Kona" },
   { id: 11, date: "So, 23.05.2027", region: "Big Island", isHawaii: true, morning: "Freizeit oder Ausflug auf Big Island", evening: "Entspannter Ausklang" },
-  { id: 12, date: "Mo, 24.05.2027", region: "Big Island (Kona)", isFlight: true, isHawaii: true, morning: "Letzter Tag auf Big Island / Abreisevorbereitung", evening: "Nachtflug AA 664: KOA 21:55 Uhr ✈️ 06:47 Uhr PHX (Phoenix, Ankunft 25.05.)" },
+  { id: 12, date: "Mo, 24.05.2027", region: "Flug", isFlight: true, isHawaii: true, morning: "Letzter Tag auf Big Island / Abreisevorbereitung", evening: "Flug AA 664: KOA 21:55 Uhr ✈️ 06:47 Uhr PHX (Phoenix, Ankunft 25.05.)" },
   { id: 13, date: "Di, 25.05.2027", region: "Phoenix (Arizona)", isFlight: true, isHawaii: false, morning: "Ankunft in Phoenix (PHX) um 06:47 Uhr morgens", evening: "Transfer, Hotel-Check-in & Entspannung" },
   { id: 14, date: "Mi, 26.05.2027", region: "Phoenix", isHawaii: false, morning: "Erkundung von Phoenix / Scottsdale", evening: "Abendessen & Freizeit in Phoenix" },
   { id: 15, date: "Do, 27.05.2027", region: "Rancho Cucamonga (CA)", isFlight: true, isHawaii: false, morning: "Fahrt / Weiterreise nach Rancho Cucamonga, Kalifornien", evening: "Check-in & Entspannung" },
