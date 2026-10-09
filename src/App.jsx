@@ -206,4 +206,78 @@ export default function App() {
                         </div>
                         <ul className="space-y-1">
                           {dayNotes.shopping?.map((note, i) => (
-                            <li key={i} className
+                            <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
+                              <span>{note}</span>
+                              <button onClick={() => handleDeleteNote(item.id, 'shopping', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            placeholder="z. B. Ala Moana Center, Souvenirs..."
+                            className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500 text-slate-200"
+                            value={inputState[`${item.id}-shopping`] || ''}
+                            onChange={e => setInputState({ ...inputState, [`${item.id}-shopping`]: e.target.value })}
+                            onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'shopping')}
+                          />
+                          <button onClick={() => handleAddNote(item.id, 'shopping')} className="bg-pink-600 hover:bg-pink-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+
+                      {/* Sonstiges Category */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
+                          <FileText className="w-3.5 h-3.5" /> Sonstiges & Reminder
+                        </div>
+                        <ul className="space-y-1">
+                          {dayNotes.misc?.map((note, i) => (
+                            <li key={i} className="flex justify-between items-center text-xs bg-slate-800 p-2 rounded border border-slate-700">
+                              <span>{note}</span>
+                              <button onClick={() => handleDeleteNote(item.id, 'misc', i)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-3 h-3" /></button>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            placeholder="z. B. Tickets ausdrucken, Sonnencreme..."
+                            className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500 text-slate-200"
+                            value={inputState[`${item.id}-misc`] || ''}
+                            onChange={e => setInputState({ ...inputState, [`${item.id}-misc`]: e.target.value })}
+                            onKeyDown={e => e.key === 'Enter' && handleAddNote(item.id, 'misc')}
+                          />
+                          <button onClick={() => handleAddNote(item.id, 'misc')} className="bg-sky-600 hover:bg-sky-500 text-white p-1.5 rounded"><Plus className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </main>
+      )}
+
+      {activeTab === 'overview' && (
+        <main className="max-w-4xl mx-auto bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-md">
+          <h2 className="text-xl font-bold mb-4 text-blue-400">Reiseübersicht</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
+              <h3 className="text-sm font-semibold text-emerald-400 mb-1">Gesamtdauer</h3>
+              <p className="text-xl font-bold text-slate-100">22 Tage</p>
+            </div>
+            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
+              <h3 className="text-sm font-semibold text-amber-400 mb-1">Stopps & Inseln</h3>
+              <p className="text-xl font-bold text-slate-100">6 Stationen</p>
+            </div>
+            <div className="bg-slate-900 p-4 rounded-lg border border-slate-700">
+              <h3 className="text-sm font-semibold text-indigo-400 mb-1">Flüge</h3>
+              <p className="text-xl font-bold text-slate-100">5 Flugtage</p>
+            </div>
+          </div>
+        </main>
+      )}
+    </div>
+  );
+}
